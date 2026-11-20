@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.DS_Store
+# zipy pro ruční instalaci se sestavují lokálně (tools/build.py); zveřejněný repozitář je v docs/
+dist/

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.mojekino" name="Moje Kino – repozitář" version="1.0.0" provider-name="{author}">
+    <extension point="xbmc.addon.repository" name="Moje Kino – repozitář">
+        <dir>
+            <info compressed="false">{base}addons.xml</info>
+            <checksum>{base}addons.xml.md5</checksum>
+            <datadir zip="true">{base}</datadir>
+        </dir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="cs_CZ">Aktualizace doplňku Moje Kino</summary>
+        <summary lang="en_GB">Updates for the Moje Kino addon</summary>
+        <description lang="cs_CZ">Repozitář, ze kterého Kodi samo stahuje nové verze doplňku Moje Kino.</description>
+        <description lang="en_GB">Repository from which Kodi downloads new versions of the Moje Kino addon.</description>
+        <platform>all</platform>
+        <license>GPL-2.0-or-later</license>
+        <assets>
+            <icon>icon.png</icon>
+        </assets>
+    </extension>
+</addon>

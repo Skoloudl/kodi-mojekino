@@ -1,0 +1,952 @@
+# Kodi Media Center language file
+# Addon id: plugin.video.mojekino
+# Generováno nástrojem tools/build.py z resources/lib/strings.py - neupravovat ručně.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_gb\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Catalogue (TMDB)"
+msgstr ""
+
+msgctxt "#30002"
+msgid "TMDB API key"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Metadata language"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Czech"
+msgstr ""
+
+msgctxt "#30006"
+msgid "Slovak"
+msgstr ""
+
+msgctxt "#30007"
+msgid "English"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Account"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Webshare"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Login and account status (VIP test)"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Warn about expiring VIP"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Warn when days remaining"
+msgstr ""
+
+msgctxt "#30015"
+msgid "More stream sources"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Sosáč (needs a Streamuj.tv account)"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Streamuj.tv account – log in / out"
+msgstr ""
+
+msgctxt "#30018"
+msgid "HellSpy (no account, converted to 720p)"
+msgstr ""
+
+msgctxt "#30019"
+msgid "Přehraj.to (no account, converted to 1080p)"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Streams"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Stream selection"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Preferred audio"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Czech / Slovak"
+msgstr ""
+
+msgctxt "#30024"
+msgid "English / original"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Any"
+msgstr ""
+
+msgctxt "#30026"
+msgid "Maximum quality"
+msgstr ""
+
+msgctxt "#30027"
+msgid "No limit"
+msgstr ""
+
+msgctxt "#30028"
+msgid "4K"
+msgstr ""
+
+msgctxt "#30029"
+msgid "1080p"
+msgstr ""
+
+msgctxt "#30030"
+msgid "720p"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Pick the best stream automatically"
+msgstr ""
+
+msgctxt "#30032"
+msgid "Hide cinema recordings (CAM/TS)"
+msgstr ""
+
+msgctxt "#30033"
+msgid "Hide files smaller than (MB)"
+msgstr ""
+
+msgctxt "#30034"
+msgid "TV shows"
+msgstr ""
+
+msgctxt "#30035"
+msgid "Play the next episode when one ends"
+msgstr ""
+
+msgctxt "#30036"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#30037"
+msgid "Offer subtitles for streams without Czech audio"
+msgstr ""
+
+msgctxt "#30038"
+msgid "Ask before the next episode (10 seconds to cancel)"
+msgstr ""
+
+msgctxt "#30039"
+msgid "Next episode pop-up via Up Next (if installed)"
+msgstr ""
+
+msgctxt "#30040"
+msgid "News watcher"
+msgstr ""
+
+msgctxt "#30041"
+msgid "Background list check"
+msgstr ""
+
+msgctxt "#30042"
+msgid "Watch for new episodes and movies"
+msgstr ""
+
+msgctxt "#30043"
+msgid "Check every (hours)"
+msgstr ""
+
+msgctxt "#30044"
+msgid "Only notify with Czech/Slovak audio"
+msgstr ""
+
+msgctxt "#30045"
+msgid "Show notifications"
+msgstr ""
+
+msgctxt "#30050"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#30051"
+msgid "Maintenance"
+msgstr ""
+
+msgctxt "#30052"
+msgid "Verbose logging"
+msgstr ""
+
+msgctxt "#30053"
+msgid "Clear cached data"
+msgstr ""
+
+msgctxt "#30060"
+msgid "Lists"
+msgstr ""
+
+msgctxt "#30061"
+msgid "Items per page"
+msgstr ""
+
+msgctxt "#30062"
+msgid "20"
+msgstr ""
+
+msgctxt "#30063"
+msgid "40"
+msgstr ""
+
+msgctxt "#30064"
+msgid "60"
+msgstr ""
+
+msgctxt "#30065"
+msgid "100"
+msgstr ""
+
+msgctxt "#30066"
+msgid "Also show adult content (search, genres)"
+msgstr ""
+
+msgctxt "#30067"
+msgid "Show rating in the title"
+msgstr ""
+
+msgctxt "#30068"
+msgid "Show year in the title"
+msgstr ""
+
+msgctxt "#30069"
+msgid "Show movie length and number of seasons"
+msgstr ""
+
+msgctxt "#30070"
+msgid "Hide short films (under 40 minutes)"
+msgstr ""
+
+msgctxt "#30071"
+msgid "Size of the A–Z list"
+msgstr ""
+
+msgctxt "#30072"
+msgid "Top 2,000"
+msgstr ""
+
+msgctxt "#30073"
+msgid "Top 5,000"
+msgstr ""
+
+msgctxt "#30074"
+msgid "Top 10,000"
+msgstr ""
+
+msgctxt "#30075"
+msgid "Show audio and subtitle languages (the first load of a list takes longer)"
+msgstr ""
+
+msgctxt "#30100"
+msgid "Moje Kino"
+msgstr ""
+
+msgctxt "#30101"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#30102"
+msgid "TV shows"
+msgstr ""
+
+msgctxt "#30103"
+msgid "My lists"
+msgstr ""
+
+msgctxt "#30104"
+msgid "Search"
+msgstr ""
+
+msgctxt "#30105"
+msgid "History"
+msgstr ""
+
+msgctxt "#30106"
+msgid "Webshare account"
+msgstr ""
+
+msgctxt "#30107"
+msgid "Settings"
+msgstr ""
+
+msgctxt "#30108"
+msgid "Set up TMDB key (needed for the catalogue)"
+msgstr ""
+
+msgctxt "#30109"
+msgid "The catalogue is loaded from The Movie Database. Create a free account at themoviedb.org, open the API section in account settings and create a key. Then paste it into the addon settings (General > TMDB API key)."
+msgstr ""
+
+msgctxt "#30111"
+msgid "Continue watching"
+msgstr ""
+
+msgctxt "#30113"
+msgid "Reload the list"
+msgstr ""
+
+msgctxt "#30114"
+msgid "First page"
+msgstr ""
+
+msgctxt "#30115"
+msgid "Press to jump to another page or reload the list."
+msgstr ""
+
+msgctxt "#30116"
+msgid "version {0}"
+msgstr ""
+
+msgctxt "#30117"
+msgid "Page {0} of {1} – go to another page…"
+msgstr ""
+
+msgctxt "#30118"
+msgid "A–Z"
+msgstr ""
+
+msgctxt "#30119"
+msgid "Titles in the list: {0} · updated {1} · press to update"
+msgstr ""
+
+msgctxt "#30120"
+msgid "New releases"
+msgstr ""
+
+msgctxt "#30121"
+msgid "Popular"
+msgstr ""
+
+msgctxt "#30122"
+msgid "Trending this week"
+msgstr ""
+
+msgctxt "#30123"
+msgid "Top rated"
+msgstr ""
+
+msgctxt "#30124"
+msgid "Now in cinemas"
+msgstr ""
+
+msgctxt "#30125"
+msgid "On the air"
+msgstr ""
+
+msgctxt "#30126"
+msgid "New shows"
+msgstr ""
+
+msgctxt "#30127"
+msgid "Genres"
+msgstr ""
+
+msgctxt "#30128"
+msgid "Next page ({0}/{1})"
+msgstr ""
+
+msgctxt "#30129"
+msgid "More results"
+msgstr ""
+
+msgctxt "#30130"
+msgid "Nothing found"
+msgstr ""
+
+msgctxt "#30131"
+msgid "Season {0}"
+msgstr ""
+
+msgctxt "#30132"
+msgid "Episode {0}"
+msgstr ""
+
+msgctxt "#30133"
+msgid "date unknown"
+msgstr ""
+
+msgctxt "#30134"
+msgid "Episode has not aired yet ({0})"
+msgstr ""
+
+msgctxt "#30135"
+msgid "Page {0} of {1}"
+msgstr ""
+
+msgctxt "#30136"
+msgid "loaded {0}"
+msgstr ""
+
+msgctxt "#30138"
+msgid "Go to page…"
+msgstr ""
+
+msgctxt "#30139"
+msgid "Page number (1–{0})"
+msgstr ""
+
+msgctxt "#30140"
+msgid "Search movies"
+msgstr ""
+
+msgctxt "#30141"
+msgid "Search TV shows"
+msgstr ""
+
+msgctxt "#30142"
+msgid "Search files on Webshare"
+msgstr ""
+
+msgctxt "#30143"
+msgid "movie"
+msgstr ""
+
+msgctxt "#30144"
+msgid "TV show"
+msgstr ""
+
+msgctxt "#30145"
+msgid "file"
+msgstr ""
+
+msgctxt "#30146"
+msgid "Clear search history"
+msgstr ""
+
+msgctxt "#30147"
+msgid "Really clear?"
+msgstr ""
+
+msgctxt "#30150"
+msgid "News for me"
+msgstr ""
+
+msgctxt "#30151"
+msgid "New episodes of followed shows and listed movies that became available."
+msgstr ""
+
+msgctxt "#30152"
+msgid "Movies to watch"
+msgstr ""
+
+msgctxt "#30153"
+msgid "Movies you saved. The watcher tells you when they become available."
+msgstr ""
+
+msgctxt "#30154"
+msgid "Followed shows"
+msgstr ""
+
+msgctxt "#30155"
+msgid "Shows checked for new episodes by the watcher."
+msgstr ""
+
+msgctxt "#30156"
+msgid "Check now"
+msgstr ""
+
+msgctxt "#30157"
+msgid "Last check: {0}"
+msgstr ""
+
+msgctxt "#30158"
+msgid "No check has run yet."
+msgstr ""
+
+msgctxt "#30159"
+msgid "Checking lists…"
+msgstr ""
+
+msgctxt "#30160"
+msgid "Nothing new"
+msgstr ""
+
+msgctxt "#30161"
+msgid "The check failed (network?)"
+msgstr ""
+
+msgctxt "#30162"
+msgid "Newly available"
+msgstr ""
+
+msgctxt "#30163"
+msgid "New items: {0}"
+msgstr ""
+
+msgctxt "#30164"
+msgid "{0} new"
+msgstr ""
+
+msgctxt "#30165"
+msgid "No news yet"
+msgstr ""
+
+msgctxt "#30166"
+msgid "Clear all news"
+msgstr ""
+
+msgctxt "#30167"
+msgid "available"
+msgstr ""
+
+msgctxt "#30168"
+msgid "episodes pending: {0}"
+msgstr ""
+
+msgctxt "#30169"
+msgid "The list is empty. Add items from the context menu."
+msgstr ""
+
+msgctxt "#30170"
+msgid "Added to movies to watch: {0}"
+msgstr ""
+
+msgctxt "#30171"
+msgid "Now following: {0}"
+msgstr ""
+
+msgctxt "#30172"
+msgid "Removed from the list"
+msgstr ""
+
+msgctxt "#30173"
+msgid "No longer following"
+msgstr ""
+
+msgctxt "#30174"
+msgid "History is empty"
+msgstr ""
+
+msgctxt "#30175"
+msgid "Clear history"
+msgstr ""
+
+msgctxt "#30176"
+msgid "Nothing in progress"
+msgstr ""
+
+msgctxt "#30177"
+msgid "last {0}"
+msgstr ""
+
+msgctxt "#30178"
+msgid "next episode"
+msgstr ""
+
+msgctxt "#30179"
+msgid "No next episode to play"
+msgstr ""
+
+msgctxt "#30180"
+msgid "Add to movies to watch"
+msgstr ""
+
+msgctxt "#30181"
+msgid "Remove from movies to watch"
+msgstr ""
+
+msgctxt "#30182"
+msgid "Follow show (watch for new episodes)"
+msgstr ""
+
+msgctxt "#30183"
+msgid "Stop following show"
+msgstr ""
+
+msgctxt "#30184"
+msgid "Pick stream manually"
+msgstr ""
+
+msgctxt "#30185"
+msgid "Search Webshare manually"
+msgstr ""
+
+msgctxt "#30186"
+msgid "Remove from news"
+msgstr ""
+
+msgctxt "#30187"
+msgid "Remove from history"
+msgstr ""
+
+msgctxt "#30188"
+msgid "Open show"
+msgstr ""
+
+msgctxt "#30189"
+msgid "Mark as watched"
+msgstr ""
+
+msgctxt "#30190"
+msgid "Pick a stream ({0})"
+msgstr ""
+
+msgctxt "#30191"
+msgid "No suitable stream found for \"{0}\"."
+msgstr ""
+
+msgctxt "#30192"
+msgid "Close"
+msgstr ""
+
+msgctxt "#30193"
+msgid "Later"
+msgstr ""
+
+msgctxt "#30194"
+msgid "Mark as unwatched"
+msgstr ""
+
+msgctxt "#30195"
+msgid "Play next episode"
+msgstr ""
+
+msgctxt "#30196"
+msgid "Remove from in progress"
+msgstr ""
+
+msgctxt "#30197"
+msgid "Downloads the list of best-known titles again. It refreshes itself once a week."
+msgstr ""
+
+msgctxt "#30198"
+msgid "Building the A–Z list…"
+msgstr ""
+
+msgctxt "#30199"
+msgid "The A–Z list could not be built"
+msgstr ""
+
+msgctxt "#30200"
+msgid "Log in to your Webshare account to play."
+msgstr ""
+
+msgctxt "#30201"
+msgid "Log in"
+msgstr ""
+
+msgctxt "#30202"
+msgid "Username or e-mail (Webshare)"
+msgstr ""
+
+msgctxt "#30203"
+msgid "Password (Webshare)"
+msgstr ""
+
+msgctxt "#30204"
+msgid "Logged in"
+msgstr ""
+
+msgctxt "#30205"
+msgid "Log out"
+msgstr ""
+
+msgctxt "#30206"
+msgid "Really log out from this device?"
+msgstr ""
+
+msgctxt "#30207"
+msgid "Logged out"
+msgstr ""
+
+msgctxt "#30208"
+msgid "not logged in"
+msgstr ""
+
+msgctxt "#30209"
+msgid "User: {0}"
+msgstr ""
+
+msgctxt "#30210"
+msgid "VIP: active"
+msgstr ""
+
+msgctxt "#30211"
+msgid "Days remaining: {0}"
+msgstr ""
+
+msgctxt "#30212"
+msgid "Valid until: {0}"
+msgstr ""
+
+msgctxt "#30213"
+msgid "VIP subscription is not active – playback will be limited."
+msgstr ""
+
+msgctxt "#30214"
+msgid "VIP inactive"
+msgstr ""
+
+msgctxt "#30215"
+msgid "VIP subscription expires in {0} days."
+msgstr ""
+
+msgctxt "#30216"
+msgid "VIP {0} days"
+msgstr ""
+
+msgctxt "#30217"
+msgid "Cached data cleared"
+msgstr ""
+
+msgctxt "#30220"
+msgid "Next episode"
+msgstr ""
+
+msgctxt "#30221"
+msgid "Starts by itself in {0} seconds."
+msgstr ""
+
+msgctxt "#30222"
+msgid "No stream found for the next episode"
+msgstr ""
+
+msgctxt "#30223"
+msgid "{0} min"
+msgstr ""
+
+msgctxt "#30224"
+msgid "{0} season"
+msgstr ""
+
+msgctxt "#30225"
+msgid "{0} seasons"
+msgstr ""
+
+msgctxt "#30226"
+msgid "{0} seasons"
+msgstr ""
+
+msgctxt "#30227"
+msgid "Hide title from lists"
+msgstr ""
+
+msgctxt "#30228"
+msgid "Title hidden: {0}"
+msgstr ""
+
+msgctxt "#30229"
+msgid "Hidden titles"
+msgstr ""
+
+msgctxt "#30230"
+msgid "You are not logged in to Webshare."
+msgstr ""
+
+msgctxt "#30231"
+msgid "Login failed. Check the username and password."
+msgstr ""
+
+msgctxt "#30232"
+msgid "The file no longer exists. Try another stream."
+msgstr ""
+
+msgctxt "#30233"
+msgid "The file is temporarily unavailable."
+msgstr ""
+
+msgctxt "#30234"
+msgid "Too many simultaneous downloads on the account."
+msgstr ""
+
+msgctxt "#30235"
+msgid "The file is password protected."
+msgstr ""
+
+msgctxt "#30236"
+msgid "The server is not responding. Check the internet connection."
+msgstr ""
+
+msgctxt "#30237"
+msgid "The provider returned an unknown error."
+msgstr ""
+
+msgctxt "#30238"
+msgid "The Webshare login is no longer valid (password changed?). Log in again?"
+msgstr ""
+
+msgctxt "#30239"
+msgid "The Webshare login is no longer valid – log in again."
+msgstr ""
+
+msgctxt "#30240"
+msgid "The TMDB key is not valid. Check it in the settings."
+msgstr ""
+
+msgctxt "#30241"
+msgid "The TMDB catalogue is not available."
+msgstr ""
+
+msgctxt "#30242"
+msgid "Unexpected error – see the Kodi log for details."
+msgstr ""
+
+msgctxt "#30243"
+msgid "Press to show the title in lists again."
+msgstr ""
+
+msgctxt "#30244"
+msgid "Similar titles"
+msgstr ""
+
+msgctxt "#30245"
+msgid "Cast and crew"
+msgstr ""
+
+msgctxt "#30246"
+msgid "Whole series: {0}"
+msgstr ""
+
+msgctxt "#30247"
+msgid "Film series"
+msgstr ""
+
+msgctxt "#30248"
+msgid "The movie is not part of any series"
+msgstr ""
+
+msgctxt "#30249"
+msgid "director"
+msgstr ""
+
+msgctxt "#30250"
+msgid "creator"
+msgstr ""
+
+msgctxt "#30251"
+msgid "writer"
+msgstr ""
+
+msgctxt "#30252"
+msgid "Movies with this person ({0})"
+msgstr ""
+
+msgctxt "#30253"
+msgid "TV shows with this person ({0})"
+msgstr ""
+
+msgctxt "#30254"
+msgid "Cast is not available"
+msgstr ""
+
+msgctxt "#30255"
+msgid "Play now"
+msgstr ""
+
+msgctxt "#30256"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "#30257"
+msgid "language ?"
+msgstr ""
+
+msgctxt "#30258"
+msgid "subs {0}"
+msgstr ""
+
+msgctxt "#30259"
+msgid "Username (Streamuj.tv)"
+msgstr ""
+
+msgctxt "#30260"
+msgid "Password (Streamuj.tv)"
+msgstr ""
+
+msgctxt "#30261"
+msgid "The Streamuj.tv account is saved."
+msgstr ""
+
+msgctxt "#30262"
+msgid "Sosáč uses the Streamuj.tv account: {0}"
+msgstr ""
+
+msgctxt "#30263"
+msgid "The Streamuj.tv account was removed"
+msgstr ""
+
+msgctxt "#30264"
+msgid "Streamuj.tv account (Sosáč)"
+msgstr ""
+
+msgctxt "#30265"
+msgid "Premium: active"
+msgstr ""
+
+msgctxt "#30266"
+msgid "Premium is not active – Streamuj.tv plays only part of the video."
+msgstr ""
+
+msgctxt "#30267"
+msgid "no premium"
+msgstr ""
+
+msgctxt "#30268"
+msgid "premium {0} days"
+msgstr ""
+
+msgctxt "#30269"
+msgid "The premium status could not be checked."
+msgstr ""
+
+msgctxt "#30270"
+msgid "Streamuj.tv premium expires in {0} days."
+msgstr ""
+
+msgctxt "#30271"
+msgid "Streamuj.tv reports an invalid name or password. Save the account anyway? (The premium status will not be shown.)"
+msgstr ""
+
+msgctxt "#30272"
+msgid "Save"
+msgstr ""
+
+msgctxt "#30273"
+msgid "Source did not respond: {0}"
+msgstr ""
+
+msgctxt "#30274"
+msgid "Resume from {0}"
+msgstr ""
+
+msgctxt "#30275"
+msgid "Play from the beginning"
+msgstr ""
+
+msgctxt "#30276"
+msgid "Searching for streams…"
+msgstr ""
+
+msgctxt "#30277"
+msgid "The Streamuj.tv account is no longer valid. Log in again?"
+msgstr ""
+
+msgctxt "#30278"
+msgid "▶ {0}"
+msgstr ""
+
+msgctxt "#30279"
+msgid "premium"
+msgstr ""

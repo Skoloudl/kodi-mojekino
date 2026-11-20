@@ -1,0 +1,952 @@
+# Kodi Media Center language file
+# Addon id: plugin.video.mojekino
+# Generováno nástrojem tools/build.py z resources/lib/strings.py - neupravovat ručně.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cs_cz\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr "Obecné"
+
+msgctxt "#30001"
+msgid "Catalogue (TMDB)"
+msgstr "Katalog (TMDB)"
+
+msgctxt "#30002"
+msgid "TMDB API key"
+msgstr "TMDB API klíč"
+
+msgctxt "#30003"
+msgid "Metadata language"
+msgstr "Jazyk popisů"
+
+msgctxt "#30005"
+msgid "Czech"
+msgstr "Čeština"
+
+msgctxt "#30006"
+msgid "Slovak"
+msgstr "Slovenština"
+
+msgctxt "#30007"
+msgid "English"
+msgstr "Angličtina"
+
+msgctxt "#30010"
+msgid "Account"
+msgstr "Účet"
+
+msgctxt "#30011"
+msgid "Webshare"
+msgstr "Webshare"
+
+msgctxt "#30012"
+msgid "Login and account status (VIP test)"
+msgstr "Přihlášení a stav účtu (test VIP)"
+
+msgctxt "#30013"
+msgid "Warn about expiring VIP"
+msgstr "Upozorňovat na končící VIP"
+
+msgctxt "#30014"
+msgid "Warn when days remaining"
+msgstr "Upozornit, když zbývá dní"
+
+msgctxt "#30015"
+msgid "More stream sources"
+msgstr "Další zdroje streamů"
+
+msgctxt "#30016"
+msgid "Sosáč (needs a Streamuj.tv account)"
+msgstr "Sosáč (potřebuje účet Streamuj.tv)"
+
+msgctxt "#30017"
+msgid "Streamuj.tv account – log in / out"
+msgstr "Účet Streamuj.tv – přihlásit / odhlásit"
+
+msgctxt "#30018"
+msgid "HellSpy (no account, converted to 720p)"
+msgstr "HellSpy (bez účtu, převod do 720p)"
+
+msgctxt "#30019"
+msgid "Přehraj.to (no account, converted to 1080p)"
+msgstr "Přehraj.to (bez účtu, převod do 1080p)"
+
+msgctxt "#30020"
+msgid "Streams"
+msgstr "Streamy"
+
+msgctxt "#30021"
+msgid "Stream selection"
+msgstr "Výběr streamu"
+
+msgctxt "#30022"
+msgid "Preferred audio"
+msgstr "Preferovaný zvuk"
+
+msgctxt "#30023"
+msgid "Czech / Slovak"
+msgstr "Česky / slovensky"
+
+msgctxt "#30024"
+msgid "English / original"
+msgstr "Anglicky / původní"
+
+msgctxt "#30025"
+msgid "Any"
+msgstr "Je to jedno"
+
+msgctxt "#30026"
+msgid "Maximum quality"
+msgstr "Nejvyšší kvalita"
+
+msgctxt "#30027"
+msgid "No limit"
+msgstr "Bez omezení"
+
+msgctxt "#30028"
+msgid "4K"
+msgstr "4K"
+
+msgctxt "#30029"
+msgid "1080p"
+msgstr "1080p"
+
+msgctxt "#30030"
+msgid "720p"
+msgstr "720p"
+
+msgctxt "#30031"
+msgid "Pick the best stream automatically"
+msgstr "Vybírat nejlepší stream automaticky"
+
+msgctxt "#30032"
+msgid "Hide cinema recordings (CAM/TS)"
+msgstr "Skrýt záznamy z kina (CAM/TS)"
+
+msgctxt "#30033"
+msgid "Hide files smaller than (MB)"
+msgstr "Skrýt soubory menší než (MB)"
+
+msgctxt "#30034"
+msgid "TV shows"
+msgstr "Seriály"
+
+msgctxt "#30035"
+msgid "Play the next episode when one ends"
+msgstr "Po skončení dílu spustit další"
+
+msgctxt "#30036"
+msgid "Subtitles"
+msgstr "Titulky"
+
+msgctxt "#30037"
+msgid "Offer subtitles for streams without Czech audio"
+msgstr "Nabídnout titulky u streamů bez českého zvuku"
+
+msgctxt "#30038"
+msgid "Ask before the next episode (10 seconds to cancel)"
+msgstr "Před dalším dílem se zeptat (10 sekund na zrušení)"
+
+msgctxt "#30039"
+msgid "Next episode pop-up via Up Next (if installed)"
+msgstr "Okénko dalšího dílu přes Up Next (je-li nainstalovaný)"
+
+msgctxt "#30040"
+msgid "News watcher"
+msgstr "Hlídač novinek"
+
+msgctxt "#30041"
+msgid "Background list check"
+msgstr "Kontrola seznamů na pozadí"
+
+msgctxt "#30042"
+msgid "Watch for new episodes and movies"
+msgstr "Hlídat nové díly a filmy ze seznamů"
+
+msgctxt "#30043"
+msgid "Check every (hours)"
+msgstr "Kontrolovat každých (hodin)"
+
+msgctxt "#30044"
+msgid "Only notify with Czech/Slovak audio"
+msgstr "Oznamovat jen s českým/slovenským zvukem"
+
+msgctxt "#30045"
+msgid "Show notifications"
+msgstr "Zobrazovat upozornění"
+
+msgctxt "#30050"
+msgid "Advanced"
+msgstr "Pokročilé"
+
+msgctxt "#30051"
+msgid "Maintenance"
+msgstr "Údržba"
+
+msgctxt "#30052"
+msgid "Verbose logging"
+msgstr "Podrobné logování"
+
+msgctxt "#30053"
+msgid "Clear cached data"
+msgstr "Vymazat dočasná data"
+
+msgctxt "#30060"
+msgid "Lists"
+msgstr "Seznamy"
+
+msgctxt "#30061"
+msgid "Items per page"
+msgstr "Položek na stránku"
+
+msgctxt "#30062"
+msgid "20"
+msgstr "20"
+
+msgctxt "#30063"
+msgid "40"
+msgstr "40"
+
+msgctxt "#30064"
+msgid "60"
+msgstr "60"
+
+msgctxt "#30065"
+msgid "100"
+msgstr "100"
+
+msgctxt "#30066"
+msgid "Also show adult content (search, genres)"
+msgstr "Zobrazovat i obsah pro dospělé (hledání, žánry)"
+
+msgctxt "#30067"
+msgid "Show rating in the title"
+msgstr "Zobrazovat hodnocení v názvu"
+
+msgctxt "#30068"
+msgid "Show year in the title"
+msgstr "Zobrazovat rok v názvu"
+
+msgctxt "#30069"
+msgid "Show movie length and number of seasons"
+msgstr "Zobrazovat délku filmu a počet řad"
+
+msgctxt "#30070"
+msgid "Hide short films (under 40 minutes)"
+msgstr "Skrýt krátké filmy (pod 40 minut)"
+
+msgctxt "#30071"
+msgid "Size of the A–Z list"
+msgstr "Velikost abecedního seznamu"
+
+msgctxt "#30072"
+msgid "Top 2,000"
+msgstr "2 000 nejznámějších"
+
+msgctxt "#30073"
+msgid "Top 5,000"
+msgstr "5 000 nejznámějších"
+
+msgctxt "#30074"
+msgid "Top 10,000"
+msgstr "10 000 nejznámějších"
+
+msgctxt "#30075"
+msgid "Show audio and subtitle languages (the first load of a list takes longer)"
+msgstr "Zobrazovat jazyky zvuku a titulků (první načtení seznamu trvá déle)"
+
+msgctxt "#30100"
+msgid "Moje Kino"
+msgstr "Moje Kino"
+
+msgctxt "#30101"
+msgid "Movies"
+msgstr "Filmy"
+
+msgctxt "#30102"
+msgid "TV shows"
+msgstr "Seriály"
+
+msgctxt "#30103"
+msgid "My lists"
+msgstr "Moje seznamy"
+
+msgctxt "#30104"
+msgid "Search"
+msgstr "Hledat"
+
+msgctxt "#30105"
+msgid "History"
+msgstr "Historie"
+
+msgctxt "#30106"
+msgid "Webshare account"
+msgstr "Účet Webshare"
+
+msgctxt "#30107"
+msgid "Settings"
+msgstr "Nastavení"
+
+msgctxt "#30108"
+msgid "Set up TMDB key (needed for the catalogue)"
+msgstr "Nastavit TMDB klíč (nutné pro katalog)"
+
+msgctxt "#30109"
+msgid "The catalogue is loaded from The Movie Database. Create a free account at themoviedb.org, open the API section in account settings and create a key. Then paste it into the addon settings (General > TMDB API key)."
+msgstr "Katalog filmů a seriálů se načítá z The Movie Database. Na webu themoviedb.org si zdarma založte účet, v Nastavení účtu otevřete sekci API a vytvořte klíč. Ten pak vložte do nastavení doplňku (Obecné > TMDB API klíč)."
+
+msgctxt "#30111"
+msgid "Continue watching"
+msgstr "Rozkoukané"
+
+msgctxt "#30113"
+msgid "Reload the list"
+msgstr "Načíst seznam znovu"
+
+msgctxt "#30114"
+msgid "First page"
+msgstr "První strana"
+
+msgctxt "#30115"
+msgid "Press to jump to another page or reload the list."
+msgstr "Stiskem přejdete na jinou stranu nebo seznam načtete znovu."
+
+msgctxt "#30116"
+msgid "version {0}"
+msgstr "verze {0}"
+
+msgctxt "#30117"
+msgid "Page {0} of {1} – go to another page…"
+msgstr "Strana {0} z {1} – přejít na jinou stranu…"
+
+msgctxt "#30118"
+msgid "A–Z"
+msgstr "Abecedně"
+
+msgctxt "#30119"
+msgid "Titles in the list: {0} · updated {1} · press to update"
+msgstr "Titulů v seznamu: {0} · aktualizováno {1} · stiskem aktualizovat"
+
+msgctxt "#30120"
+msgid "New releases"
+msgstr "Novinky"
+
+msgctxt "#30121"
+msgid "Popular"
+msgstr "Populární"
+
+msgctxt "#30122"
+msgid "Trending this week"
+msgstr "Trendy týdne"
+
+msgctxt "#30123"
+msgid "Top rated"
+msgstr "Nejlépe hodnocené"
+
+msgctxt "#30124"
+msgid "Now in cinemas"
+msgstr "Právě v kinech"
+
+msgctxt "#30125"
+msgid "On the air"
+msgstr "Právě vysílané"
+
+msgctxt "#30126"
+msgid "New shows"
+msgstr "Nové seriály"
+
+msgctxt "#30127"
+msgid "Genres"
+msgstr "Žánry"
+
+msgctxt "#30128"
+msgid "Next page ({0}/{1})"
+msgstr "Další strana ({0}/{1})"
+
+msgctxt "#30129"
+msgid "More results"
+msgstr "Další výsledky"
+
+msgctxt "#30130"
+msgid "Nothing found"
+msgstr "Nic nenalezeno"
+
+msgctxt "#30131"
+msgid "Season {0}"
+msgstr "Sezóna {0}"
+
+msgctxt "#30132"
+msgid "Episode {0}"
+msgstr "Díl {0}"
+
+msgctxt "#30133"
+msgid "date unknown"
+msgstr "datum neznámé"
+
+msgctxt "#30134"
+msgid "Episode has not aired yet ({0})"
+msgstr "Díl ještě nebyl odvysílán ({0})"
+
+msgctxt "#30135"
+msgid "Page {0} of {1}"
+msgstr "Strana {0} z {1}"
+
+msgctxt "#30136"
+msgid "loaded {0}"
+msgstr "načteno {0}"
+
+msgctxt "#30138"
+msgid "Go to page…"
+msgstr "Přejít na stranu…"
+
+msgctxt "#30139"
+msgid "Page number (1–{0})"
+msgstr "Číslo strany (1–{0})"
+
+msgctxt "#30140"
+msgid "Search movies"
+msgstr "Hledat film"
+
+msgctxt "#30141"
+msgid "Search TV shows"
+msgstr "Hledat seriál"
+
+msgctxt "#30142"
+msgid "Search files on Webshare"
+msgstr "Hledat soubor na Webshare"
+
+msgctxt "#30143"
+msgid "movie"
+msgstr "film"
+
+msgctxt "#30144"
+msgid "TV show"
+msgstr "seriál"
+
+msgctxt "#30145"
+msgid "file"
+msgstr "soubor"
+
+msgctxt "#30146"
+msgid "Clear search history"
+msgstr "Smazat historii hledání"
+
+msgctxt "#30147"
+msgid "Really clear?"
+msgstr "Opravdu smazat?"
+
+msgctxt "#30150"
+msgid "News for me"
+msgstr "Novinky pro mě"
+
+msgctxt "#30151"
+msgid "New episodes of followed shows and listed movies that became available."
+msgstr "Nové díly sledovaných seriálů a filmy ze seznamu, ke kterým se objevil stream."
+
+msgctxt "#30152"
+msgid "Movies to watch"
+msgstr "Filmy ke zhlédnutí"
+
+msgctxt "#30153"
+msgid "Movies you saved. The watcher tells you when they become available."
+msgstr "Filmy, které jste si uložili. Hlídač oznámí, až budou dostupné."
+
+msgctxt "#30154"
+msgid "Followed shows"
+msgstr "Sledované seriály"
+
+msgctxt "#30155"
+msgid "Shows checked for new episodes by the watcher."
+msgstr "Seriály, u kterých hlídač kontroluje nové díly."
+
+msgctxt "#30156"
+msgid "Check now"
+msgstr "Zkontrolovat nyní"
+
+msgctxt "#30157"
+msgid "Last check: {0}"
+msgstr "Poslední kontrola: {0}"
+
+msgctxt "#30158"
+msgid "No check has run yet."
+msgstr "Kontrola zatím neproběhla."
+
+msgctxt "#30159"
+msgid "Checking lists…"
+msgstr "Kontroluji seznamy…"
+
+msgctxt "#30160"
+msgid "Nothing new"
+msgstr "Žádné novinky"
+
+msgctxt "#30161"
+msgid "The check failed (network?)"
+msgstr "Kontrola se nezdařila (síť?)"
+
+msgctxt "#30162"
+msgid "Newly available"
+msgstr "Nově dostupné"
+
+msgctxt "#30163"
+msgid "New items: {0}"
+msgstr "Nových položek: {0}"
+
+msgctxt "#30164"
+msgid "{0} new"
+msgstr "{0} nových"
+
+msgctxt "#30165"
+msgid "No news yet"
+msgstr "Zatím žádné novinky"
+
+msgctxt "#30166"
+msgid "Clear all news"
+msgstr "Smazat všechny novinky"
+
+msgctxt "#30167"
+msgid "available"
+msgstr "dostupné"
+
+msgctxt "#30168"
+msgid "episodes pending: {0}"
+msgstr "čeká dílů: {0}"
+
+msgctxt "#30169"
+msgid "The list is empty. Add items from the context menu."
+msgstr "Seznam je prázdný. Položky přidáte přes kontextové menu."
+
+msgctxt "#30170"
+msgid "Added to movies to watch: {0}"
+msgstr "Přidáno do filmů ke zhlédnutí: {0}"
+
+msgctxt "#30171"
+msgid "Now following: {0}"
+msgstr "Seriál se sleduje: {0}"
+
+msgctxt "#30172"
+msgid "Removed from the list"
+msgstr "Odebráno ze seznamu"
+
+msgctxt "#30173"
+msgid "No longer following"
+msgstr "Seriál už se nesleduje"
+
+msgctxt "#30174"
+msgid "History is empty"
+msgstr "Historie je prázdná"
+
+msgctxt "#30175"
+msgid "Clear history"
+msgstr "Smazat historii"
+
+msgctxt "#30176"
+msgid "Nothing in progress"
+msgstr "Nic rozkoukaného"
+
+msgctxt "#30177"
+msgid "last {0}"
+msgstr "naposledy {0}"
+
+msgctxt "#30178"
+msgid "next episode"
+msgstr "další díl"
+
+msgctxt "#30179"
+msgid "No next episode to play"
+msgstr "Žádný další díl k přehrání"
+
+msgctxt "#30180"
+msgid "Add to movies to watch"
+msgstr "Přidat do filmů ke zhlédnutí"
+
+msgctxt "#30181"
+msgid "Remove from movies to watch"
+msgstr "Odebrat z filmů ke zhlédnutí"
+
+msgctxt "#30182"
+msgid "Follow show (watch for new episodes)"
+msgstr "Sledovat seriál (hlídat nové díly)"
+
+msgctxt "#30183"
+msgid "Stop following show"
+msgstr "Přestat sledovat seriál"
+
+msgctxt "#30184"
+msgid "Pick stream manually"
+msgstr "Vybrat stream ručně"
+
+msgctxt "#30185"
+msgid "Search Webshare manually"
+msgstr "Hledat ručně na Webshare"
+
+msgctxt "#30186"
+msgid "Remove from news"
+msgstr "Odebrat z novinek"
+
+msgctxt "#30187"
+msgid "Remove from history"
+msgstr "Odebrat z historie"
+
+msgctxt "#30188"
+msgid "Open show"
+msgstr "Otevřít seriál"
+
+msgctxt "#30189"
+msgid "Mark as watched"
+msgstr "Označit jako zhlédnuté"
+
+msgctxt "#30190"
+msgid "Pick a stream ({0})"
+msgstr "Vyberte stream ({0})"
+
+msgctxt "#30191"
+msgid "No suitable stream found for \"{0}\"."
+msgstr "Pro „{0}“ se nenašel žádný vhodný stream."
+
+msgctxt "#30192"
+msgid "Close"
+msgstr "Zavřít"
+
+msgctxt "#30193"
+msgid "Later"
+msgstr "Později"
+
+msgctxt "#30194"
+msgid "Mark as unwatched"
+msgstr "Označit jako nezhlédnuté"
+
+msgctxt "#30195"
+msgid "Play next episode"
+msgstr "Přehrát další díl"
+
+msgctxt "#30196"
+msgid "Remove from in progress"
+msgstr "Odebrat z rozkoukaných"
+
+msgctxt "#30197"
+msgid "Downloads the list of best-known titles again. It refreshes itself once a week."
+msgstr "Znovu stáhne seznam nejznámějších titulů. Sám se obnovuje jednou týdně."
+
+msgctxt "#30198"
+msgid "Building the A–Z list…"
+msgstr "Sestavuji abecední seznam…"
+
+msgctxt "#30199"
+msgid "The A–Z list could not be built"
+msgstr "Abecední seznam se nepodařilo sestavit"
+
+msgctxt "#30200"
+msgid "Log in to your Webshare account to play."
+msgstr "Pro přehrávání se přihlaste ke svému účtu Webshare."
+
+msgctxt "#30201"
+msgid "Log in"
+msgstr "Přihlásit"
+
+msgctxt "#30202"
+msgid "Username or e-mail (Webshare)"
+msgstr "Uživatelské jméno nebo e-mail (Webshare)"
+
+msgctxt "#30203"
+msgid "Password (Webshare)"
+msgstr "Heslo (Webshare)"
+
+msgctxt "#30204"
+msgid "Logged in"
+msgstr "Přihlášení proběhlo"
+
+msgctxt "#30205"
+msgid "Log out"
+msgstr "Odhlásit"
+
+msgctxt "#30206"
+msgid "Really log out from this device?"
+msgstr "Opravdu odhlásit účet z tohoto zařízení?"
+
+msgctxt "#30207"
+msgid "Logged out"
+msgstr "Odhlášeno"
+
+msgctxt "#30208"
+msgid "not logged in"
+msgstr "nepřihlášeno"
+
+msgctxt "#30209"
+msgid "User: {0}"
+msgstr "Uživatel: {0}"
+
+msgctxt "#30210"
+msgid "VIP: active"
+msgstr "VIP: aktivní"
+
+msgctxt "#30211"
+msgid "Days remaining: {0}"
+msgstr "Zbývá dní: {0}"
+
+msgctxt "#30212"
+msgid "Valid until: {0}"
+msgstr "Platí do: {0}"
+
+msgctxt "#30213"
+msgid "VIP subscription is not active – playback will be limited."
+msgstr "VIP předplatné není aktivní – přehrávání bude omezené."
+
+msgctxt "#30214"
+msgid "VIP inactive"
+msgstr "VIP neaktivní"
+
+msgctxt "#30215"
+msgid "VIP subscription expires in {0} days."
+msgstr "VIP předplatné končí za {0} dní."
+
+msgctxt "#30216"
+msgid "VIP {0} days"
+msgstr "VIP {0} dní"
+
+msgctxt "#30217"
+msgid "Cached data cleared"
+msgstr "Dočasná data vymazána"
+
+msgctxt "#30220"
+msgid "Next episode"
+msgstr "Další díl"
+
+msgctxt "#30221"
+msgid "Starts by itself in {0} seconds."
+msgstr "Spustí se sám za {0} sekund."
+
+msgctxt "#30222"
+msgid "No stream found for the next episode"
+msgstr "Pro další díl se nenašel stream"
+
+msgctxt "#30223"
+msgid "{0} min"
+msgstr "{0} min"
+
+msgctxt "#30224"
+msgid "{0} season"
+msgstr "{0} řada"
+
+msgctxt "#30225"
+msgid "{0} seasons"
+msgstr "{0} řady"
+
+msgctxt "#30226"
+msgid "{0} seasons"
+msgstr "{0} řad"
+
+msgctxt "#30227"
+msgid "Hide title from lists"
+msgstr "Skrýt titul v seznamech"
+
+msgctxt "#30228"
+msgid "Title hidden: {0}"
+msgstr "Titul skryt: {0}"
+
+msgctxt "#30229"
+msgid "Hidden titles"
+msgstr "Skryté tituly"
+
+msgctxt "#30230"
+msgid "You are not logged in to Webshare."
+msgstr "Nejste přihlášeni k Webshare."
+
+msgctxt "#30231"
+msgid "Login failed. Check the username and password."
+msgstr "Přihlášení se nezdařilo. Zkontrolujte jméno a heslo."
+
+msgctxt "#30232"
+msgid "The file no longer exists. Try another stream."
+msgstr "Soubor už neexistuje. Zkuste jiný stream."
+
+msgctxt "#30233"
+msgid "The file is temporarily unavailable."
+msgstr "Soubor je dočasně nedostupný."
+
+msgctxt "#30234"
+msgid "Too many simultaneous downloads on the account."
+msgstr "Příliš mnoho současných stahování na účtu."
+
+msgctxt "#30235"
+msgid "The file is password protected."
+msgstr "Soubor je chráněn heslem."
+
+msgctxt "#30236"
+msgid "The server is not responding. Check the internet connection."
+msgstr "Server neodpovídá. Zkontrolujte připojení k internetu."
+
+msgctxt "#30237"
+msgid "The provider returned an unknown error."
+msgstr "Poskytovatel vrátil neznámou chybu."
+
+msgctxt "#30238"
+msgid "The Webshare login is no longer valid (password changed?). Log in again?"
+msgstr "Přihlášení k Webshare už neplatí (změna hesla?). Přihlásit znovu?"
+
+msgctxt "#30239"
+msgid "The Webshare login is no longer valid – log in again."
+msgstr "Přihlášení k Webshare už neplatí – přihlaste se znovu."
+
+msgctxt "#30240"
+msgid "The TMDB key is not valid. Check it in the settings."
+msgstr "TMDB klíč není platný. Zkontrolujte ho v nastavení."
+
+msgctxt "#30241"
+msgid "The TMDB catalogue is not available."
+msgstr "Katalog TMDB není dostupný."
+
+msgctxt "#30242"
+msgid "Unexpected error – see the Kodi log for details."
+msgstr "Neočekávaná chyba – podrobnosti jsou v logu Kodi."
+
+msgctxt "#30243"
+msgid "Press to show the title in lists again."
+msgstr "Stiskem titul znovu zobrazíte v seznamech."
+
+msgctxt "#30244"
+msgid "Similar titles"
+msgstr "Podobné tituly"
+
+msgctxt "#30245"
+msgid "Cast and crew"
+msgstr "Herci a tvůrci"
+
+msgctxt "#30246"
+msgid "Whole series: {0}"
+msgstr "Celá série: {0}"
+
+msgctxt "#30247"
+msgid "Film series"
+msgstr "Filmová série"
+
+msgctxt "#30248"
+msgid "The movie is not part of any series"
+msgstr "Film nepatří do žádné série"
+
+msgctxt "#30249"
+msgid "director"
+msgstr "režie"
+
+msgctxt "#30250"
+msgid "creator"
+msgstr "tvůrce"
+
+msgctxt "#30251"
+msgid "writer"
+msgstr "scénář"
+
+msgctxt "#30252"
+msgid "Movies with this person ({0})"
+msgstr "Filmy této osoby ({0})"
+
+msgctxt "#30253"
+msgid "TV shows with this person ({0})"
+msgstr "Seriály této osoby ({0})"
+
+msgctxt "#30254"
+msgid "Cast is not available"
+msgstr "Obsazení není k dispozici"
+
+msgctxt "#30255"
+msgid "Play now"
+msgstr "Přehrát hned"
+
+msgctxt "#30256"
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgctxt "#30257"
+msgid "language ?"
+msgstr "jazyk ?"
+
+msgctxt "#30258"
+msgid "subs {0}"
+msgstr "tit. {0}"
+
+msgctxt "#30259"
+msgid "Username (Streamuj.tv)"
+msgstr "Uživatelské jméno (Streamuj.tv)"
+
+msgctxt "#30260"
+msgid "Password (Streamuj.tv)"
+msgstr "Heslo (Streamuj.tv)"
+
+msgctxt "#30261"
+msgid "The Streamuj.tv account is saved."
+msgstr "Účet Streamuj.tv je uložený."
+
+msgctxt "#30262"
+msgid "Sosáč uses the Streamuj.tv account: {0}"
+msgstr "Sosáč používá účet Streamuj.tv: {0}"
+
+msgctxt "#30263"
+msgid "The Streamuj.tv account was removed"
+msgstr "Účet Streamuj.tv byl z doplňku odebrán"
+
+msgctxt "#30264"
+msgid "Streamuj.tv account (Sosáč)"
+msgstr "Účet Streamuj.tv (Sosáč)"
+
+msgctxt "#30265"
+msgid "Premium: active"
+msgstr "Premium: aktivní"
+
+msgctxt "#30266"
+msgid "Premium is not active – Streamuj.tv plays only part of the video."
+msgstr "Premium není aktivní – Streamuj.tv přehraje jen část videa."
+
+msgctxt "#30267"
+msgid "no premium"
+msgstr "bez premium"
+
+msgctxt "#30268"
+msgid "premium {0} days"
+msgstr "premium {0} dní"
+
+msgctxt "#30269"
+msgid "The premium status could not be checked."
+msgstr "Stav premium se nepodařilo zjistit."
+
+msgctxt "#30270"
+msgid "Streamuj.tv premium expires in {0} days."
+msgstr "Premium na Streamuj.tv končí za {0} dní."
+
+msgctxt "#30271"
+msgid "Streamuj.tv reports an invalid name or password. Save the account anyway? (The premium status will not be shown.)"
+msgstr "Streamuj.tv hlásí neplatné jméno nebo heslo. Uložit účet přesto? (Stav premium pak nebude vidět.)"
+
+msgctxt "#30272"
+msgid "Save"
+msgstr "Uložit"
+
+msgctxt "#30273"
+msgid "Source did not respond: {0}"
+msgstr "Neodpověděl zdroj: {0}"
+
+msgctxt "#30274"
+msgid "Resume from {0}"
+msgstr "Pokračovat od {0}"
+
+msgctxt "#30275"
+msgid "Play from the beginning"
+msgstr "Přehrát od začátku"
+
+msgctxt "#30276"
+msgid "Searching for streams…"
+msgstr "Hledám streamy…"
+
+msgctxt "#30277"
+msgid "The Streamuj.tv account is no longer valid. Log in again?"
+msgstr "Účet Streamuj.tv už neplatí. Přihlásit znovu?"
+
+msgctxt "#30278"
+msgid "▶ {0}"
+msgstr "▶ {0}"
+
+msgctxt "#30279"
+msgid "premium"
+msgstr "premium"

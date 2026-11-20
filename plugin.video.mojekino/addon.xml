@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.mojekino" name="Moje Kino" version="0.7.2" provider-name="lukas">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="main.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.service" library="service.py"/>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en_GB">Personal catalogue and player for your own web storage account</summary>
+        <summary lang="cs_CZ">Osobní katalog a přehrávač pro vlastní účet webového úložiště</summary>
+        <description lang="en_GB">Browse movies and TV shows (TMDB), keep your own lists, get notified about new episodes and play content through your own Webshare account and other optional sources (Sosáč, HellSpy, Přehraj.to). The addon does not host or distribute any content.</description>
+        <description lang="cs_CZ">Procházení filmů a seriálů (TMDB), vlastní seznamy, hlídání nových dílů a přehrávání přes vlastní účet Webshare a další volitelné zdroje (Sosáč, HellSpy, Přehraj.to). Doplněk sám žádný obsah nehostuje ani nešíří.</description>
+        <disclaimer lang="en_GB">The author does not host or distribute any of the content displayed by this addon.</disclaimer>
+        <disclaimer lang="cs_CZ">Autor není hostitelem ani nešíří žádný obsah zobrazený tímto doplňkem.</disclaimer>
+        <language>cs en</language>
+        <platform>all</platform>
+        <license>GPL-2.0-or-later</license>
+        <news>0.7.2 - oprava přihlášení ke Streamuj.tv (Sosáč)</news>
+        <assets>
+            <icon>resources/icon.png</icon>
+        </assets>
+    </extension>
+</addon>
