@@ -369,6 +369,17 @@ class Tmdb(object):
         last = raw.get('last_episode_to_air') or {}
         return int(last.get('season_number') or 0), int(last.get('episode_number') or 0)
 
+    def next_to_air(self, tmdb_id):
+        """Co seriál čeká: {'season', 'episode', 'air_date'} dalšího ohlášeného dílu (nebo None)
+        a `ended` = seriál skončil. Bere se z detailu seriálu, který už bývá v mezipaměti."""
+        raw = self.detail('tv', tmdb_id)
+        upcoming = raw.get('next_episode_to_air') or {}
+        episode = None
+        if upcoming.get('episode_number'):
+            episode = {'season': int(upcoming.get('season_number') or 0), 'episode': int(upcoming['episode_number']),
+                       'air_date': upcoming.get('air_date') or ''}
+        return {'next': episode, 'ended': (raw.get('status') or '') in ('Ended', 'Canceled')}
+
     def episodes(self, tmdb_id, season, fresh=False):
         data = self._get('/tv/%s/season/%s' % (tmdb_id, season), ttl=6 * HOUR, fresh=fresh)
         today = datetime.date.today().isoformat()

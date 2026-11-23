@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.mojekino" name="Moje Kino" version="0.7.2" provider-name="lukas">
+<addon id="plugin.video.mojekino" name="Moje Kino" version="0.8.3" provider-name="lukas">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
     </requires>
@@ -17,7 +17,7 @@
         <language>cs en</language>
         <platform>all</platform>
         <license>GPL-2.0-or-later</license>
-        <news>0.7.2 - oprava přihlášení ke Streamuj.tv (Sosáč)</news>
+        <news>0.8.3 - filtr streamů (zdroj, zvuk, kvalita, titulky) a nastavení titulků při přehrání</news>
         <assets>
             <icon>resources/icon.png</icon>
         </assets>

@@ -88,6 +88,102 @@ def my_list(params):
     listing.finish(cache=False)
 
 
+def _episode_code(season, episode):
+    return 'S%02dE%02d' % (int(season), int(episode))
+
+
+def _short_date(iso):
+    """2026-11-28 -> 28.11. (letos) nebo 28.11.2027."""
+    try:
+        day = datetime.datetime.strptime(iso, '%Y-%m-%d').date()
+    except (TypeError, ValueError):
+        return iso or ''
+    return day.strftime('%d.%m.') if day.year == datetime.date.today().year else day.strftime('%d.%m.%Y')
+
+
+def _show_status(database, tmdb, tmdb_id):
+    """Stav hlídaného seriálu jako barevný text: díly čekající na stream a kdy vyjde další díl."""
+    parts = []
+    pending = database.pending_list(tmdb_id)
+    if pending:
+        text = _episode_code(pending[0]['season'], pending[0]['episode'])
+        if len(pending) > 1:
+            text += ' ' + t('guard_more', len(pending) - 1)
+        parts.append('[COLOR orange]%s[/COLOR]' % t('guard_waiting', text))
+    info = None
+    if tmdb.has_key:
+        try:
+            info = tmdb.next_to_air(tmdb_id)
+        except MetadataError:
+            info = None
+    if info and info['next']:
+        upcoming = info['next']
+        parts.append('[COLOR gray]%s[/COLOR]' % t('guard_next_air', _episode_code(upcoming['season'], upcoming['episode']),
+                                                 _short_date(upcoming['air_date']) or '?'))
+    elif info and info['ended']:
+        parts.append('[COLOR gray]%s[/COLOR]' % t('guard_ended'))
+    elif not pending:
+        parts.append('[COLOR gray]%s[/COLOR]' % t('guard_up_to_date'))
+    return '  '.join(parts)
+
+
+@route('guard')
+def guard(params):
+    """Hlídané: nahoře nové díly a filmy, které hlídač našel, pod nimi hlídané tituly se stavem."""
+    database = ctx.db()
+    tmdb = ctx.tmdb()
+    shows, movies = database.watch_list('tv'), database.watch_list('movie')
+    listing = ui.Listing('videos')
+    if not shows and not movies:
+        listing.action('[COLOR orange]%s[/COLOR]' % t('guard_empty'), 'guard_help', ui.ICON_SETTINGS,
+                       plot=t('guard_help'))
+    new_mark = '[COLOR lime]● %s[/COLOR]  ' % t('guard_new')
+    # 1. nalezené novinky, které ještě nejsou zhlédnuté - dají se rovnou pustit
+    for row in database.news_list(limit=60):
+        record = 'movie' if row['kind'] == 'movie' else 'episode'
+        progress = database.progress_get(record, row['tmdb_id'], row['season'], row['episode'])
+        if progress and progress['watched']:
+            continue
+        when = '  [COLOR gray]%s[/COLOR]' % _date(row['found_at'])
+        remove = [(t('ctx_news_remove'), 'RunPlugin(%s)' % url_for('news_remove', id=row['id']))]
+        media = _row_media('movie' if record == 'movie' else 'tv', row)
+        if record == 'movie':
+            listing.add(*ui.movie_item(media, in_watchlist=True, label=new_mark + row['title'] + when,
+                                       extra_context=remove, progress=progress))
+        else:
+            name = (row['subtitle'] or '').split(' · ', 1)
+            remove.append((t('ctx_open_show'), 'Container.Update(%s)' % url_for('seasons', id=row['tmdb_id'])))
+            listing.add(*ui.episode_item(media, row['season'], row['episode'], name[1] if len(name) > 1 else '',
+                                         label='%s%s – %s%s' % (new_mark, row['title'], row['subtitle'] or '', when),
+                                         extra_context=remove, progress=progress))
+    # 2. hlídané seriály: co čeká na stream a kdy vyjde další díl
+    for row in shows:
+        media = _row_media('tv', row)
+        status = _show_status(database, tmdb, row['tmdb_id'])
+        listing.add(*ui.show_item(media, followed=True, label=media['title'] + ('  ' + status if status else '')))
+    # 3. hlídané filmy
+    progress = database.progress_movies()
+    for row in movies:
+        media = _row_media('movie', row)
+        state = ('[COLOR lime]%s[/COLOR]' % t('available') if row['available_at']
+                 else '[COLOR orange]%s[/COLOR]' % t('guard_movie_waiting'))
+        listing.add(*ui.movie_item(media, in_watchlist=True, label='%s  %s' % (media['title'], state),
+                                   progress=progress.get(row['tmdb_id'])))
+    last = database.meta_get('job_last_watcher')
+    label = t('check_now')
+    if last:
+        label += '  [COLOR gray]%s[/COLOR]' % t('check_last', _date(last, with_time=True))
+    listing.action(label, 'check_now', ui.ICON_SETTINGS,
+                   plot=t('check_now_plot', _date(last, with_time=True)) if last else t('check_never'))
+    listing.finish(cache=False)
+    database.news_mark_seen()
+
+
+@route('guard_help')
+def guard_help(params):
+    kodi.ok(t('guard_help'), t('menu_guard'))
+
+
 @route('watch_toggle')
 def watch_toggle(params):
     kind = params.get('kind', 'movie')
@@ -182,7 +278,7 @@ def check_now(params):
         bar.update(int(100.0 * done / total) if total else 100, t('addon_name'), title or t('checking'))
 
     try:
-        watcher = Watcher(database, ctx.tmdb(), ctx.provider(), ctx.prefs(),
+        watcher = Watcher(database, ctx.tmdb(), ctx.watch_providers(), ctx.prefs(),
                           czsk_only=kodi.setting_bool('watcher_czsk_only'), progress=progress)
         found = watcher.run()
     finally:

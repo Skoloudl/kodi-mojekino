@@ -35,12 +35,18 @@ odpovídáte vy.
 ## Co doplněk umí
 
 - **Filmy / Seriály** – novinky, populární, trendy, žánry, hledání.
-- **Přehrání** – po výběru titulu najde soubory, seřadí je podle jazyka a kvality
-  a nabídne výběr (nebo vybere sám, je-li to zapnuto v nastavení).
+- **Přehrání** – po výběru titulu najde soubory ve všech zapnutých zdrojích najednou, seřadí je podle jazyka
+  a kvality a nabídne výběr (nebo vybere sám, je-li to zapnuto v nastavení). Každý stream má barevný štítek
+  kvality (UHD 4K, FHD 1080, HD 720, SD, případně HDR / CAM / 3D), jazyk zvuku (český a slovenský zeleně),
+  velikost, kodek a zvuk; na druhém řádku je barevně zdroj a název souboru.
+- **Filtr streamů** – první řádek výběru („Filtr: zdroj, zvuk, kvalita, titulky…“, s počty streamů podle zdrojů)
+  otevře okno filtru. Zúžit lze podle zdroje, zvuku (CZ, SK, EN), kvality (4K až SD) a titulků; filtry se kombinují
+  a nabízejí jen hodnoty, které ve výsledcích opravdu jsou, s počty.
 - **Moje seznamy** – přes kontextové menu (dlouhý stisk OK / klávesa C) přidáte film
-  do „Filmy ke zhlédnutí“ nebo začnete sledovat seriál.
-- **Hlídač novinek** – na pozadí kontroluje, zda vyšel nový díl sledovaného seriálu nebo
-  zda se k filmu ze seznamu objevil stream. Výsledky jsou v „Novinky pro mě“.
+  do „Filmy ke zhlédnutí“ nebo u seriálu zvolíte „Hlídat nové díly“.
+- **Hlídané** – na pozadí kontroluje, zda vyšel nový díl hlídaného seriálu nebo zda se k filmu
+  ze seznamu objevil stream. Položka „Hlídané“ v hlavním menu ukazuje nové díly (jdou rovnou pustit)
+  a u každého seriálu stav: čeká na stream / kdy vyjde další díl.
 - **Účet** – test přihlášení a VIP, upozornění na končící předplatné (počet dní lze nastavit).
 - **Stránkování** – 20 až 100 položek na stránku (Nastavení → Obecné → Seznamy). Řádek
   „Strana X z Y · načteno HH:MM“ nahoře v seznamu umí skočit na libovolnou stranu nebo seznam načíst znovu.
@@ -49,14 +55,18 @@ odpovídáte vy.
 
 - **Seriály** – po dokoukání dílu se sám spustí další ve stejném jazyce a kvalitě (dotaz předem lze zapnout).
   Díly se pouští jako playlist, takže v přehrávači funguje přeskočení na další / předchozí díl.
-  S doplňkem **Up Next** se ke konci dílu ukáže jeho okénko „Další díl“ s odpočtem.
+  S doplňkem **Up Next** se ke konci dílu ukáže jeho okénko „Další díl“ s odpočtem (Zavřít pokračování zruší).
   U sezón a sledovaných seriálů je ukazatel zhlédnutých dílů, „Rozkoukané“ nabízí další díl k přehrání.
 - **Další zdroje** – Nastavení → Účet → Další zdroje streamů: Sosáč (účet Streamuj.tv, titul se páruje
   podle IMDb), HellSpy a Přehraj.to (bez účtu, video převedené serverem). Hledá se ve všech zapnutých
-  zdrojích najednou, u streamu je vidět, odkud je. Účet Streamuj.tv je v hlavním menu se stavem premium.
-  Hlídač novinek a jazyky v seznamech zatím používají jen Webshare.
+  zdrojích najednou, u streamu je vidět, odkud je. Účet Streamuj.tv je v hlavním menu se stavem a datem konce
+  premium („premium do 21.12.2026 (28 dní)“), služba upozorní na končící premium. Hlídač novinek hledá
+  na Webshare a Sosáči, jazyky v seznamech zatím používají jen Webshare.
 - **Titulky** – u streamů bez českého zvuku se otevře hledání titulků Kodi. Je k tomu potřeba
   doplněk pro titulky (Doplňky → Instalovat z repozitáře → Titulky → OpenSubtitles.com) a účet u něj.
+  V Nastavení → Streamy → Titulky lze zvolit, co se stane při spuštění: nechat na Kodi, zapnout české/slovenské
+  titulky ze streamu (když zvuk není česky ani slovensky), nebo titulky vždy vypnout. Titulky vpálené přímo
+  do obrazu se vypnout nedají; ostatní se přepínají v přehrávači (klávesa T).
 - **Objevování** – v kontextovém menu titulu: „Podobné tituly“, „Celá série“ (filmové série v pořadí
   uvedení) a „Herci a tvůrci“ s proklikem na další tvorbu dané osoby.
 - **Abecedně** – Filmy / Seriály → Abecedně. Doplněk si sám udržuje index nejznámějších titulů
@@ -95,6 +105,8 @@ tools/build.py                sestavení zipu (generuje i jazykové soubory)
 tools/build_repo.py           sestavení repozitáře do docs/ (nastavení v tools/repo.json)
 tools/try_search.py           vyzkoušení hledání streamů mimo Kodi
 tools/make_icon.py            vygenerování ikony
+tools/make_badges.swift       vygenerování štítků kvality (resources/media; jen macOS)
+tools/try_streamuj.py         vyzkoušení přihlášení ke Streamuj.tv mimo Kodi (heslo se zeptá, nikam se neukládá)
 tests/test_all.py             testy (běží bez Kodi a bez sítě)
 ```
 
@@ -125,8 +137,7 @@ a `python3 tools/build_repo.py`, pak změny (včetně `docs/`) nahrajte na GitHu
 
 - synchronizace zhlédnutého a seznamů mezi více Kodi (přes Home Assistant),
 - titulky (stažení k přehrávanému titulu),
-- propojení s Trakt (synchronizace seznamů a zhlédnutého),
-- hodnocení z ČSFD.
+- propojení s Trakt (synchronizace seznamů a zhlédnutého).
 
 ## Soukromí
 

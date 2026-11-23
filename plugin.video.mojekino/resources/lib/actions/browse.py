@@ -36,7 +36,8 @@ def _sosac_label():
         return '%s  [COLOR lime]%s[/COLOR]' % (label, t('premium_short'))
     days = int(state['days'])
     color = 'orange' if days <= kodi.setting_int('vip_warn_days', 7) else 'lime'
-    return '%s  [COLOR %s]%s[/COLOR]' % (label, color, t('premium_days_short', days))
+    text = t('premium_until_short', state['until'], days) if state.get('until') else t('premium_days_short', days)
+    return '%s  [COLOR %s]%s[/COLOR]' % (label, color, text)
 
 
 def _account_label():
@@ -67,10 +68,11 @@ def root(params):
     listing.folder(t('menu_movies'), 'movies', ui.ICON_MOVIES)
     listing.folder(t('menu_shows'), 'shows', ui.ICON_SHOWS)
     unseen = database.news_unseen_count()
-    my_label = t('menu_my')
+    guard_label = t('menu_guard')
     if unseen:
-        my_label += '  [COLOR lime]%s[/COLOR]' % t('news_count', unseen)
-    listing.folder(my_label, 'my', ui.ICON_LIST)
+        guard_label += '  [COLOR lime]%s[/COLOR]' % t('news_count', unseen)
+    listing.folder(guard_label, 'guard', ui.ICON_NEW, plot=t('guard_plot'))
+    listing.folder(t('menu_my'), 'my', ui.ICON_LIST)
     listing.folder(t('menu_continue'), 'continue', ui.ICON_HISTORY)
     listing.folder(t('menu_search'), 'search', ui.ICON_SEARCH)
     listing.folder(t('menu_history'), 'history', ui.ICON_HISTORY)

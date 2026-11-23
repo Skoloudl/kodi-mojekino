@@ -85,7 +85,7 @@ def watcher(monitor):
     database = ctx.db()
     if not database.watch_list('movie') and not database.watch_list('tv'):
         return True
-    job = Watcher(database, ctx.tmdb(), ctx.provider(), ctx.prefs(),
+    job = Watcher(database, ctx.tmdb(), ctx.watch_providers(), ctx.prefs(),
                   czsk_only=kodi.setting_bool('watcher_czsk_only'),
                   should_stop=monitor.abortRequested,
                   sleep=lambda seconds: monitor.waitForAbort(seconds))

@@ -126,16 +126,147 @@ def _require_login(provider):
     return False
 
 
-def _choose(found, pick):
-    """Vrátí index vybraného streamu nebo -1. Při automatickém výběru vždy první."""
-    if kodi.setting_bool('auto_select') and not pick:
-        return 0
-    items = []
+# ---------------------------------------------------------------- filtr ve výběru streamu
+FACETS = ('provider', 'audio', 'quality', 'subs')
+FACET_TEXTS = {'provider': 'filter_facet_provider', 'audio': 'filter_facet_audio',
+               'quality': 'filter_facet_quality', 'subs': 'filter_facet_subs'}
+UNKNOWN = '?'          # zvuk bez označení jazyka
+NO_SUBS = '-'          # stream bez titulků
+FILTER_MIN = 8         # u kratších seznamů z jednoho zdroje se filtr nenabízí
+_QUALITY_NAMES = {'q2160': '4K', 'q1080': '1080p', 'q720': '720p', 'q480': 'SD'}
+
+
+def _values(candidate, facet):
+    """Hodnoty, kterými se stream hlásí do daného filtru (zvuk i titulky jich mohou mít víc)."""
+    info = candidate.info
+    if facet == 'provider':
+        return [candidate.file.provider]
+    if facet == 'audio':
+        return list(info['audio']) or [UNKNOWN]
+    if facet == 'quality':
+        return ['q%d' % (info['quality'] if info['quality'] in (2160, 1080, 720, 480) else 0)]
+    return list(info['subs']) or [NO_SUBS]
+
+
+def _matches(candidate, state, skip=None):
+    for facet in FACETS:
+        if facet != skip and state.get(facet) and state[facet] not in _values(candidate, facet):
+            return False
+    return True
+
+
+def _value_label(facet, value):
+    if facet == 'provider':
+        return NAMES.get(value, value)
+    if facet == 'audio':
+        return t('filter_audio_unknown') if value == UNKNOWN else value.upper()
+    if facet == 'quality':
+        return _QUALITY_NAMES.get(value, t('filter_quality_unknown'))
+    return t('filter_no_subs') if value == NO_SUBS else t('filter_subs_lang', value.upper())
+
+
+def _facet_options(found, state, facet):
+    """[(hodnota, počet)] pro daný filtr. Počty platí pro streamy, které vyhovují ostatním filtrům."""
+    counts = {}
     for candidate in found:
-        row = xbmcgui.ListItem(candidate.label, candidate.file.name)
-        row.setArt({'icon': ui.ICON_VIDEO})
-        items.append(row)
-    return kodi.select(t('pick_stream', len(found)), items, use_details=True)
+        if _matches(candidate, state, skip=facet):
+            for value in _values(candidate, facet):
+                counts[value] = counts.get(value, 0) + 1
+    if facet == 'provider':
+        return list(counts.items())                                   # pořadí podle nejlepšího streamu
+    if facet == 'quality':
+        return sorted(counts.items(), key=lambda item: -int(item[0][1:]))
+    first = ('cz', 'sk', 'en')
+    return sorted(counts.items(), key=lambda item: (item[0] in (UNKNOWN, NO_SUBS),
+                                                    first.index(item[0]) if item[0] in first else len(first),
+                                                    item[0]))
+
+
+def _active_text(state):
+    return ' · '.join(_value_label(f, state[f]) for f in FACETS if state.get(f))
+
+
+def _filterable(found):
+    return len(set(c.file.provider for c in found)) > 1 or len(found) >= FILTER_MIN
+
+
+def _edit_filter(found, state):
+    """Okno filtru: zdroj, zvuk, kvalita, titulky. Každý řádek ukazuje zvolenou hodnotu a otevře její nabídku."""
+    while True:
+        shown = sum(1 for c in found if _matches(c, state))
+        if not shown:
+            state.clear()
+            continue
+        rows, actions = [], []
+        for facet in FACETS:
+            options = _facet_options(found, state, facet)
+            if len(options) < 2 and not state.get(facet):
+                continue                                              # není z čeho vybírat
+            value = _value_label(facet, state[facet]) if state.get(facet) else t('filter_any')
+            rows.append(t(FACET_TEXTS[facet], value))
+            actions.append(facet)
+        rows.append('[COLOR lime]%s[/COLOR]' % t('filter_show', shown))
+        actions.append('show')
+        if any(state.get(f) for f in FACETS):
+            rows.append(t('filter_reset'))
+            actions.append('reset')
+        index = kodi.select(t('filter_heading'), rows)
+        if index < 0 or actions[index] == 'show':
+            return
+        if actions[index] == 'reset':
+            state.clear()
+            continue
+        facet = actions[index]
+        options = _facet_options(found, state, facet)
+        labels = [t('filter_any_count', sum(1 for c in found if _matches(c, state, skip=facet)))]
+        labels += ['%s (%d)' % (_value_label(facet, value), number) for value, number in options]
+        picked = kodi.select(t(FACET_TEXTS[facet], '').rstrip(': '), labels)
+        if picked == 0:
+            state.pop(facet, None)
+        elif picked > 0:
+            state[facet] = options[picked - 1][0]
+
+
+def _choose(found, pick, state=None):
+    """Nechá vybrat stream a vrátí kandidáta, nebo None (zrušeno). Při automatickém výběru vždy prvního.
+
+    U delších seznamů a při více zdrojích je nahoře řádek „Filtr“ (zdroj, zvuk, kvalita, titulky), který
+    seznam zúží. `state` si pamatuje zvolený filtr, aby po neúspěšném přehrání zůstal.
+    """
+    if kodi.setting_bool('auto_select') and not pick:
+        return found[0]
+    state = state if state is not None else {}
+    filterable = _filterable(found)
+    while True:
+        shown = [c for c in found if _matches(c, state)]
+        items = []
+        if filterable:
+            if state:
+                head = xbmcgui.ListItem('[COLOR yellow]%s[/COLOR]' % t('filter_row_on', _active_text(state)),
+                                        t('filter_row_shown', len(shown), len(found)))
+            else:
+                counts = {}
+                for candidate in found:
+                    counts[candidate.file.provider] = counts.get(candidate.file.provider, 0) + 1
+                head = xbmcgui.ListItem('[COLOR yellow]%s[/COLOR]' % t('filter_row'),
+                                        ' · '.join('%s %d' % (NAMES.get(s, s), n) for s, n in counts.items()))
+            head.setArt({'icon': ui.ICON_SEARCH, 'thumb': ui.ICON_SEARCH})
+            items.append(head)
+        for candidate in shown:
+            # obrázek se štítkem kvality (4K / 1080 / 720...), vedle něj jazyk a velikost, pod tím zdroj a soubor
+            row = xbmcgui.ListItem(candidate.title, candidate.detail)
+            badge = kodi.media(candidate.badge + '.png')
+            row.setArt({'icon': badge, 'thumb': badge})
+            items.append(row)
+        index = kodi.select(t('pick_stream', len(shown)), items, use_details=True)
+        if index < 0:
+            return None
+        if filterable:
+            if index == 0:
+                _edit_filter(found, state)
+                continue
+            index -= 1
+        return shown[index]
 
 
 def _resolve(sources, candidate):
@@ -161,12 +292,13 @@ def _resolve_chosen(sources, found, pick, silent=False):
                     break
         kodi.notify(provider_error_text(last_error), is_error=True)
         return None, None
+    state = {}
     while True:
-        index = _choose(found, pick)
-        if index < 0:
+        candidate = _choose(found, pick, state)
+        if candidate is None:
             return None, None
         try:
-            return found[index], _resolve(sources, found[index])
+            return candidate, _resolve(sources, candidate)
         except ProviderError as e:
             kodi.notify(provider_error_text(e), is_error=True)
             if e.code not in (ProviderError.NOT_FOUND, ProviderError.UNAVAILABLE, ProviderError.PASSWORD):
@@ -281,14 +413,15 @@ def play(params, direct=False):
     if imdb:
         item.getVideoInfoTag().setIMDBNumber(imdb)
     track = {'kind': record, 'tmdb_id': tmdb_id, 'season': season, 'episode': episode,
-             'title': media['title'], 'subs': _wants_subtitles(candidate.info), 'queued': params.get('queued') == '1'}
+             'title': media['title'], 'subs': _wants_subtitles(candidate.info), 'queued': params.get('queued') == '1',
+             'czsk_audio': streams.has_czsk_audio(candidate.info)}
     queue = None
     if record == 'episode':
         entry = _queue_entry(tmdb, media, tmdb_id, season, episode)
         if entry:
             queue = entry[:2]
             current = dict(info, season=season, episode=episode)
-            track['upnext'] = upnext.payload(media, current, entry[2], tmdb_id)
+            track['upnext'] = upnext.payload(media, current, entry[2], tmdb_id, play_url=entry[0])
     _start(link, item, track=track, direct=direct, queue=queue, resume_at=resume_at)
     return True
 

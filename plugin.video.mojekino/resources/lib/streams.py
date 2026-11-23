@@ -14,6 +14,8 @@ CACHE_TTL = 30 * 60
 SEARCH_LIMIT = 60
 PROBE_LIMIT = 40          # při zjišťování jazyků do seznamů stačí méně výsledků
 _RE_YEAR = re.compile(r'\b(19[2-9]\d|20[0-4]\d)\b')
+COLOR_CZSK = 'FF1CD6A4'       # barvy Kodi: AARRGGBB
+PROVIDER_COLORS = {'webshare': 'FF40A0FF', 'sosac': 'FFFFA030', 'hellspy': 'FFFF6FB5', 'prehrajto': 'FFB48CFF'}
 
 
 class Prefs(object):
@@ -39,6 +41,42 @@ class Candidate(object):
         if self.file.provider in NAMES:
             text += '  [COLOR gray]%s[/COLOR]' % NAMES[self.file.provider]
         return text
+
+    # ---- řádek ve výběru streamu: obrázek kvality + dva řádky textu ----
+    @property
+    def badge(self):
+        """Název obrázku se štítkem kvality (resources/media/<název>.png)."""
+        quality = self.info['quality'] if self.info['quality'] in (2160, 1080, 720, 480) else 0
+        extra = '_cam' if self.info['source'] == 'cam' else '_hdr' if self.info['hdr'] else '_3d' if self.info['3d'] else ''
+        return 'q%d%s' % (quality, extra)
+
+    @property
+    def title(self):
+        """První řádek: jazyky zvuku (český a slovenský zeleně), velikost a technické údaje."""
+        info = self.info
+        langs = []
+        for lang in info['audio']:
+            text = '[B]%s[/B]' % lang.upper()
+            langs.append('[COLOR %s]%s[/COLOR]' % (COLOR_CZSK, text) if lang in ('cz', 'sk') else text)
+        parts = [' '.join(langs) or '[COLOR gray]?[/COLOR]']
+        if self.file.size and self.file.provider not in TRANSCODED:
+            parts.append('[B]%s[/B]' % format_size(self.file.size))
+        details = [info['codec'], 'HDR' if info['hdr'] else '', '3D' if info['3d'] else '', info['channels'],
+                   'Atmos' if info['atmos'] else '', 'CAM' if info['source'] == 'cam' else '']
+        if info['subs']:
+            details.append('tit. ' + '+'.join(lang.upper() for lang in info['subs']))
+        details = [d for d in details if d]
+        if details:
+            parts.append('[COLOR gray]%s[/COLOR]' % ' · '.join(details))
+        return '  '.join(parts)
+
+    @property
+    def detail(self):
+        """Druhý řádek: zdroj (barevně) a název souboru."""
+        name = NAMES.get(self.file.provider)
+        if not name:
+            return self.file.name
+        return '[COLOR %s]%s[/COLOR]  %s' % (PROVIDER_COLORS.get(self.file.provider, 'gray'), name, self.file.name)
 
 
 # ---------------------------------------------------------------- shoda názvu

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tenká vrstva nad Kodi API: nastavení, texty, dialogy, logování."""
+import os
 import sys
 from urllib.parse import urlencode
 
@@ -25,6 +26,11 @@ def version():
 
 def icon():
     return addon().getAddonInfo('icon')
+
+
+def media(name):
+    """Cesta k obrázku dodávanému s doplňkem (resources/media)."""
+    return os.path.join(xbmcvfs.translatePath(addon().getAddonInfo('path')), 'resources', 'media', name)
 
 
 def profile_dir():

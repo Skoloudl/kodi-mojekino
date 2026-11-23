@@ -18,17 +18,34 @@ WATCHED_RATIO = 0.90      # od kolika procent se titul počítá jako zhlédnut�
 MIN_POSITION = 60         # kratší přehrání se jako rozkoukané neukládá (sekundy)
 SAVE_EVERY = 30           # jak často ukládat pozici během přehrávání
 MAX_START_DELAY = 180     # jak staré „právě spouštím“ ještě bereme vážně
+SUBS_CZ = ('cze', 'ces', 'cs', 'cz', 'czech', 'čeština', 'cestina')
+SUBS_SK = ('slo', 'slk', 'sk', 'slovak', 'slovenčina', 'slovencina')
 END_GUARD = 20            # kolik sekund před koncem dílu rozhodnout, zda playlist smí pokračovat
+UPNEXT_HANDOVER = upnext.NOTIFY_TIME + 6   # kdy uvolnit playlist pro Up Next (těsně před jeho okénkem)
+UPNEXT_FALLBACK = 8       # okénko se neukázalo - kolik sekund před koncem vrátit další díl do playlistu
+UPNEXT_SEEK_BACK = 10     # o kolik se musí přetočit zpět, aby se další díl do playlistu vrátil
 
 
-def playlist_continues():
-    """Smí Kodi po konci dílu samo přejít na další díl v playlistu?
+def next_mode():
+    """Kdo po konci dílu spustí další díl.
 
-    Jen když se má další díl spustit rovnou: zapnuté automatické přehrání, bez dotazu předem
-    a bez okénka Up Next (ty spouští další díl přes službu).
+      'off'      - nikdo (automatické přehrání je vypnuté)
+      'upnext'   - okénko doplňku Up Next
+      'ask'      - služba po vlastním dotazu s odpočtem
+      'playlist' - Kodi samo přejde na další položku playlistu
     """
-    return (kodi.setting_bool('autoplay_next', True) and not kodi.setting_bool('autoplay_ask', False)
-            and not upnext.active())
+    if not kodi.setting_bool('autoplay_next', True):
+        return 'off'
+    if upnext.active():
+        return 'upnext'
+    if kodi.setting_bool('autoplay_ask', False):
+        return 'ask'
+    return 'playlist'
+
+
+def _has_next(playlist):
+    """Je v playlistu za právě hrající položkou ještě něco?"""
+    return playlist.size() - 1 > max(playlist.getposition(), 0)
 
 
 class Tracker(xbmc.Player):
@@ -40,6 +57,8 @@ class Tracker(xbmc.Player):
         self.saved_at = 0
         self.subs_due = 0          # kdy otevřít hledání titulků (0 = ne)
         self.finished_episode = None
+        self.upnext_shown = False  # okénko Up Next se u tohoto dílu ukázalo - dál rozhoduje ono
+        self.handed = False        # další díl je z playlistu odebraný, aby ho mohl zařadit Up Next
 
     # ---- události přehrávače ----
     def onAVStarted(self):
@@ -59,9 +78,38 @@ class Tracker(xbmc.Player):
         self.position = self.duration = 0.0
         self.saved_at = time.time()
         self.subs_due = time.time() + 4 if data.get('subs') else 0
+        self.upnext_shown = self.handed = False
         kodi.debug('sleduji přehrávání: %s' % data)
-        if data.get('upnext') and upnext.active() and kodi.setting_bool('autoplay_next', True):
+        self._apply_subtitles(data)
+        if data.get('upnext') and next_mode() == 'upnext':
             upnext.send(data['upnext'])
+
+    def _apply_subtitles(self, data):
+        """Titulky podle nastavení: Kodi (nic se nemění), zapnout české/slovenské, nebo vypnout.
+
+        Týká se titulků, které jsou ve streamu jako samostatná stopa nebo v souboru. Titulky vpálené
+        přímo do obrazu jsou součást videa a vypnout se nedají - ty žádný přehrávač neumí skrýt.
+        """
+        mode = kodi.setting_int('subs_mode', 0)
+        if mode not in (1, 2):
+            return
+        try:
+            if mode == 2:
+                self.showSubtitles(False)
+                return
+            if data.get('czsk_audio'):
+                return                                  # český nebo slovenský zvuk - titulky netřeba
+            available = [str(name or '').lower() for name in self.getAvailableSubtitleStreams()]
+            for names in (SUBS_CZ, SUBS_SK):
+                for index, name in enumerate(available):
+                    if name in names or any(name.startswith(n) for n in names if len(n) > 3):
+                        self.setSubtitleStream(index)
+                        self.showSubtitles(True)
+                        self.subs_due = 0               # titulky už jsou, hledat nové netřeba
+                        kodi.debug('zapnuty titulky ve streamu: %s' % name)
+                        return
+        except RuntimeError:
+            kodi.debug('titulky se nepodařilo nastavit')
 
     def onPlayBackStopped(self):
         self._finish(ended=False)
@@ -87,22 +135,54 @@ class Tracker(xbmc.Player):
             self.subs_due = 0
             # okno Kodi pro stažení titulků (vyžaduje nainstalovaný doplněk pro titulky)
             xbmc.executebuiltin('ActivateWindow(SubtitleSearch)')
-        if (self.current.get('next_url') and self.duration
-                and self.duration - self.position <= END_GUARD and not playlist_continues()):
-            # Další díl je v playlistu kvůli tlačítku „další“. Sám se ale spustit nemá (vypnuto,
-            # dotaz předem, nebo okénko Up Next) - odebereme ho, než Kodi na konci dílu přejde dál.
-            xbmc.PlayList(xbmc.PLAYLIST_VIDEO).remove(self.current['next_url'])
-            self.current['next_url'] = ''
+        if self.duration:
+            self._guard_next(self.duration - self.position)
         if time.time() - self.saved_at >= SAVE_EVERY:
             self._save(ended=False)
+
+    def _guard_next(self, remaining):
+        """Hlídá další díl v playlistu podle toho, kdo ho má po konci dílu spustit (viz next_mode)."""
+        mode = next_mode()
+        if mode == 'upnext' and not self.upnext_shown and upnext.dialog_open():
+            self.upnext_shown = True
+            kodi.debug('Up Next ukázal okénko - další díl řídí on')
+        url = self.current.get('next_url')
+        if not url:
+            return
+        playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+        if mode in ('off', 'ask'):
+            # Další díl je v playlistu jen kvůli tlačítku „další“. Sám se spustit nemá (vypnuto, nebo
+            # se služba nejdřív zeptá) - odebereme ho, než Kodi na konci dílu přejde dál.
+            if remaining <= END_GUARD:
+                playlist.remove(url)
+                self.current['next_url'] = ''
+            return
+        if mode != 'upnext' or self.upnext_shown:
+            return
+        # Up Next nabídne další díl jen tehdy, když v playlistu žádný není (jinak ho má za cizí
+        # playlist a mlčí). Těsně před jeho okénkem proto další díl odebereme a Up Next si ho zařadí
+        # sám. Kdyby se okénko neukázalo (Up Next vypnutý, chyba), díl před koncem zase vrátíme,
+        # aby se další díl spustil v každém případě.
+        if not self.handed:
+            if upnext.NOTIFY_TIME + 1 < remaining <= UPNEXT_HANDOVER:
+                playlist.remove(url)
+                self.handed = True
+        elif ((remaining <= UPNEXT_FALLBACK or remaining > UPNEXT_HANDOVER + UPNEXT_SEEK_BACK)
+              and not _has_next(playlist)):
+            playlist.add(url)
+            self.handed = False
+            if remaining <= UPNEXT_FALLBACK:
+                kodi.log('Up Next okénko neukázal - další díl spustí playlist')
 
     def _finish(self, ended):
         if self.current:
             self._save(ended)
             episode = self.current.get('kind') == 'episode'
-            # další díl spustí buď playlist (je v něm), nebo Up Next, nebo služba (autoplay.offer)
-            if (ended and episode and not self.current.get('next_url') and not upnext.active()
-                    and kodi.setting_bool('autoplay_next', True)):
+            # Další díl spustí playlist (je-li v něm) nebo Up Next. Služba (autoplay.offer) ho spouští,
+            # když v playlistu není: po dotazu, u dílu puštěného samostatně, nebo když se Up Next neozval.
+            mode = next_mode()
+            if (ended and episode and not self.current.get('next_url')
+                    and (mode in ('ask', 'playlist') or (mode == 'upnext' and not self.upnext_shown))):
                 self.finished_episode = dict(self.current)
         self.current = None
         self.subs_due = 0

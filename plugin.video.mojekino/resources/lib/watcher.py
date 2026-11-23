@@ -22,7 +22,7 @@ class Watcher(object):
                  should_stop=None, progress=None, sleep=time.sleep):
         self.db = database
         self.tmdb = tmdb
-        self.provider = provider
+        self.provider = provider          # poskytovatel nebo seznam poskytovatelů (první je hlavní)
         self.prefs = prefs
         self.czsk_only = czsk_only
         self.should_stop = should_stop or (lambda: False)

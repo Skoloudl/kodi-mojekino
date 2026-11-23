@@ -179,6 +179,22 @@ msgctxt "#30045"
 msgid "Show notifications"
 msgstr ""
 
+msgctxt "#30046"
+msgid "Subtitles during playback"
+msgstr ""
+
+msgctxt "#30047"
+msgid "As set in Kodi"
+msgstr ""
+
+msgctxt "#30048"
+msgid "Turn on Czech/Slovak when the audio is not Czech or Slovak"
+msgstr ""
+
+msgctxt "#30049"
+msgid "Always turn off"
+msgstr ""
+
 msgctxt "#30050"
 msgid "Advanced"
 msgstr ""
@@ -456,7 +472,7 @@ msgid "Movies you saved. The watcher tells you when they become available."
 msgstr ""
 
 msgctxt "#30154"
-msgid "Followed shows"
+msgid "Watched shows"
 msgstr ""
 
 msgctxt "#30155"
@@ -524,7 +540,7 @@ msgid "Added to movies to watch: {0}"
 msgstr ""
 
 msgctxt "#30171"
-msgid "Now following: {0}"
+msgid "Watching for new episodes: {0}"
 msgstr ""
 
 msgctxt "#30172"
@@ -532,7 +548,7 @@ msgid "Removed from the list"
 msgstr ""
 
 msgctxt "#30173"
-msgid "No longer following"
+msgid "No longer watched"
 msgstr ""
 
 msgctxt "#30174"
@@ -568,11 +584,11 @@ msgid "Remove from movies to watch"
 msgstr ""
 
 msgctxt "#30182"
-msgid "Follow show (watch for new episodes)"
+msgid "Watch for new episodes"
 msgstr ""
 
 msgctxt "#30183"
-msgid "Stop following show"
+msgid "Stop watching for new episodes"
 msgstr ""
 
 msgctxt "#30184"
@@ -949,4 +965,116 @@ msgstr ""
 
 msgctxt "#30279"
 msgid "premium"
+msgstr ""
+
+msgctxt "#30280"
+msgid "premium until {0} ({1} days)"
+msgstr ""
+
+msgctxt "#30281"
+msgid "Watched for news"
+msgstr ""
+
+msgctxt "#30282"
+msgid "Shows and movies the add-on checks for new episodes or streams. New episodes are on top and can be played right away."
+msgstr ""
+
+msgctxt "#30283"
+msgid "new"
+msgstr ""
+
+msgctxt "#30284"
+msgid "waiting for a stream: {0}"
+msgstr ""
+
+msgctxt "#30285"
+msgid "next episode {0} · {1}"
+msgstr ""
+
+msgctxt "#30286"
+msgid "show ended"
+msgstr ""
+
+msgctxt "#30287"
+msgid "no new episode"
+msgstr ""
+
+msgctxt "#30288"
+msgid "waiting for a stream"
+msgstr ""
+
+msgctxt "#30289"
+msgid "Nothing is watched yet – how to add a show?"
+msgstr ""
+
+msgctxt "#30290"
+msgid "Find a show in the catalogue, open its context menu (long-press OK or the C key) and pick \"Watch for new episodes\". The add-on then checks in the background whether a new episode aired and whether a stream exists. When it finds one, it notifies you and the episode appears here.\n\nMovies work the same way: \"Add to movies to watch\"."
+msgstr ""
+
+msgctxt "#30291"
+msgid "+{0}"
+msgstr ""
+
+msgctxt "#30296"
+msgid "Filter: source, audio, quality, subtitles…"
+msgstr ""
+
+msgctxt "#30297"
+msgid "Filter: {0} – change…"
+msgstr ""
+
+msgctxt "#30298"
+msgid "showing {0} of {1}"
+msgstr ""
+
+msgctxt "#30299"
+msgid "Stream filter"
+msgstr ""
+
+msgctxt "#30300"
+msgid "Source: {0}"
+msgstr ""
+
+msgctxt "#30301"
+msgid "Audio: {0}"
+msgstr ""
+
+msgctxt "#30302"
+msgid "Quality: {0}"
+msgstr ""
+
+msgctxt "#30303"
+msgid "Subtitles: {0}"
+msgstr ""
+
+msgctxt "#30304"
+msgid "any"
+msgstr ""
+
+msgctxt "#30305"
+msgid "Any ({0})"
+msgstr ""
+
+msgctxt "#30306"
+msgid "Show streams ({0})"
+msgstr ""
+
+msgctxt "#30307"
+msgid "Clear filter"
+msgstr ""
+
+msgctxt "#30308"
+msgid "no subtitles"
+msgstr ""
+
+msgctxt "#30309"
+msgid "{0} subtitles"
+msgstr ""
+
+msgctxt "#30310"
+msgid "not labelled"
+msgstr ""
+
+msgctxt "#30311"
+msgid "unknown"
 msgstr ""

@@ -27,6 +27,15 @@ from resources.lib.service import autoplay, jobs, runner  # noqa: E402
 from resources.lib.service.tracker import Tracker  # noqa: E402
 from resources.lib.watcher import Watcher  # noqa: E402
 
+from resources.lib.providers import sosac as _sosac  # noqa: E402
+
+
+def _offline_web(path, data=None, cookie=''):
+    raise ProviderError(ProviderError.NETWORK, 'testy běží bez sítě')
+
+
+_sosac.web_fetch = _offline_web                 # web Streamuj.tv se v testech nahrazuje atrapou
+
 STATE = kodistubs.STATE
 GB = 1073741824
 REAL_EXTRA_PROVIDERS = ctx.extra_providers      # ScreenTests ji nahrazují atrapou bez sítě
@@ -144,6 +153,9 @@ class FakeTmdb(object):
 
     def last_aired(self, tmdb_id, fresh=False):
         return self.last
+
+    def next_to_air(self, tmdb_id):
+        return {'next': {'season': 1, 'episode': 4, 'air_date': '2999-01-01'}, 'ended': False}
 
     def imdb_id(self, kind, tmdb_id):
         return 'tt1375666' if kind == 'movie' else 'tt0000020'
@@ -585,6 +597,145 @@ class ScreenTests(unittest.TestCase):
         call('history')
         self.assertIn('Počátek', labels()[0])
 
+    def test_stream_picker_rows(self):
+        # výběr streamu: obrázek se štítkem kvality, řádek s jazykem a velikostí, pod ním zdroj a soubor
+        def candidate(name, size=0, provider='webshare'):
+            return streams.Candidate(StreamFile(provider, 'x', name, size), parser.parse(name), 0)
+        uhd = candidate('Film.2024.2160p.HDR.HEVC.Atmos.5.1.CZ.EN.mkv', 8 * GB)
+        self.assertEqual(uhd.badge, 'q2160_hdr')
+        self.assertIn('[B]CZ[/B]', uhd.title)
+        self.assertIn('[B]EN[/B]', uhd.title)
+        self.assertIn('8,0 GB', uhd.title)
+        self.assertIn('HEVC · HDR · 5.1 · Atmos', uhd.title)
+        self.assertNotIn('4K', uhd.title)                         # kvalitu ukazuje obrázek
+        self.assertIn('Webshare', uhd.detail)
+        self.assertTrue(uhd.detail.endswith('Film.2024.2160p.HDR.HEVC.Atmos.5.1.CZ.EN.mkv'))
+        self.assertEqual(candidate('Film 2024 1080p CZ.mkv').badge, 'q1080')
+        self.assertEqual(candidate('Film 2024 720p CAM CZ.mkv').badge, 'q720_cam')
+        self.assertEqual(candidate('Film 2024 SK dabing.avi').badge, 'q0')
+        self.assertEqual(candidate('Film 2024 DVDRip.avi').badge, 'q480')
+        unknown = candidate('Film 2024.mkv', 700 * 1048576, provider='hellspy')
+        self.assertIn('?', unknown.title)
+        self.assertNotIn('MB', unknown.title)                     # u převáděného videa velikost nic neříká
+        self.assertIn('HellSpy', unknown.detail)
+        self.assertIn('tit. CZ', candidate('Film 2024 1080p EN cz titulky.mkv').title)
+        STATE['answers']['select'] = 0
+        call('play', kind='movie', id=10)
+        rows = STATE['select_items']
+        self.assertTrue(rows[0].art['icon'].endswith('.png'))
+        self.assertIn('resources/media/q', rows[0].art['icon'].replace(os.sep, '/'))
+        self.assertTrue(rows[0].label2.endswith('.mkv'))             # druhý řádek: zdroj a název souboru
+        media = os.path.join(HERE, '..', 'plugin.video.mojekino', 'resources', 'media')
+        for row in rows:                                          # každý použitý štítek v doplňku opravdu je
+            self.assertTrue(os.path.exists(os.path.join(media, os.path.basename(row.art['icon']))))
+
+    def test_stream_picker_filter(self):
+        from resources.lib.actions import play
+
+        def candidate(provider, ident, name, size=0):
+            return streams.Candidate(StreamFile(provider, ident, name, size), parser.parse(name), 0)
+        found = [candidate('webshare', 'w1', 'Show.S01E01.1080p.CZ.mkv', 2 * GB),
+                 candidate('prehrajto', 'p1', 'Show S01E01 1080p CZ'),
+                 candidate('webshare', 'w2', 'Show.S01E01.720p.CZ.mkv', GB),
+                 candidate('sosac', 's1', 'Show S01E01 720p EN CZ titulky')]
+
+        class Source(object):
+            def resolve(self, ident):
+                return 'https://example.invalid/' + ident
+        sources = dict((name, Source()) for name in ('webshare', 'prehrajto', 'sosac'))
+
+        def menus():
+            return [d[1] for d in STATE['dialogs'] if d[0] == 'select']
+        try:
+            # řádek „Filtr“ je první a ukazuje počty podle zdrojů; přímý výběr ho přeskočí
+            STATE['answers']['select'] = 3                            # 0 = filtr, 3 = třetí stream
+            chosen, _link = play._resolve_chosen(sources, found, False)
+            self.assertEqual(chosen.file.ident, 'w2')
+            head = STATE['select_items'][0]
+            self.assertIn('Filtr', head.label)
+            self.assertEqual(head.label2, 'Webshare 2 · Přehraj.to 1 · Sosáč 1')
+            # zdroj: filtr (0) -> řádek Zdroj (0) -> Sosáč (3) -> Zobrazit (1) -> jediný stream Sosáče (1)
+            del STATE['dialogs'][:]
+            STATE['answers']['selects'] = [0, 0, 3, 1, 1]
+            chosen, link = play._resolve_chosen(sources, found, False)
+            self.assertEqual((chosen.file.ident, link), ('s1', 'https://example.invalid/s1'))
+            self.assertEqual(menus()[1], ['Zdroj: vše', 'Zvuk: vše', 'Kvalita: vše', 'Titulky: vše',
+                                          '[COLOR lime]Zobrazit streamy (4)[/COLOR]'])
+            self.assertEqual(menus()[2], ['Vše (4)', 'Webshare (2)', 'Přehraj.to (1)', 'Sosáč (1)'])
+            self.assertEqual(menus()[3], ['Zdroj: Sosáč', '[COLOR lime]Zobrazit streamy (1)[/COLOR]', 'Zrušit filtr'])
+            head, row = STATE['select_items']
+            self.assertIn('Filtr: Sosáč – změnit', head.label)
+            self.assertEqual(head.label2, 'zobrazeno 1 z 4')
+            # kombinace: zvuk CZ, pak kvalita 1080p (počty platí pro zvolený zvuk), nakonec druhý stream
+            del STATE['dialogs'][:]
+            STATE['answers']['selects'] = [0, 1, 1, 2, 1, 3, 2]
+            chosen, _link = play._resolve_chosen(sources, found, False)
+            self.assertEqual(chosen.file.ident, 'p1')
+            self.assertEqual(menus()[2], ['Vše (4)', 'CZ (3)', 'EN (1)'])
+            self.assertEqual(menus()[4], ['Vše (3)', '1080p (2)', '720p (1)'])
+            self.assertIn('Filtr: CZ · 1080p – změnit', STATE['select_items'][0].label)
+            # zrušení filtru i seznamu: žádný stream, nic se nespustí
+            STATE['answers']['selects'] = [0, -1, -1]
+            self.assertEqual(play._resolve_chosen(sources, found, False), (None, None))
+            self.assertEqual(len(STATE['select_items']), 5)           # filtr + čtyři streamy
+            # jeden zdroj a málo streamů: žádný řádek navíc; od osmi se filtr nabídne i tak
+            STATE['answers']['selects'] = [0]
+            chosen, _link = play._resolve_chosen(sources, [found[0], found[2]], False)
+            self.assertEqual(chosen.file.ident, 'w1')
+            self.assertEqual(len(STATE['select_items']), 2)
+            many = [candidate('webshare', 'x%d' % n, 'Show.S01E01.1080p.CZ.%d.mkv' % n, GB) for n in range(8)]
+            STATE['answers']['selects'] = [1]
+            chosen, _link = play._resolve_chosen(sources, many, False)
+            self.assertEqual((chosen.file.ident, len(STATE['select_items'])), ('x0', 9))
+        finally:
+            STATE['answers'].pop('selects', None)
+            STATE['answers']['select'] = 0
+
+    def test_subtitle_mode(self):
+        tracker = Tracker()
+        try:
+            STATE['subtitle_streams'] = ['eng', 'cze']
+            # výchozí: nic se nemění
+            STATE['answers']['select'] = 1                            # anglický stream (Inception 720p EN)
+            call('play', kind='movie', id=10)
+            tracker.onAVStarted()
+            self.assertNotIn('subs_shown', STATE)
+            tracker.onPlayBackStopped()
+            # zapnout české: najde se stopa „cze“ a hledání titulků se zruší
+            STATE['settings']['subs_mode'] = '1'
+            call('play', kind='movie', id=10)
+            tracker.onAVStarted()
+            self.assertEqual((STATE['subtitle_stream'], STATE['subs_shown']), (1, True))
+            self.assertEqual(tracker.subs_due, 0)
+            tracker.onPlayBackStopped()
+            # stream bez české stopy: nic se nevynucuje a zůstane nabídka hledání titulků
+            STATE.pop('subs_shown'); STATE.pop('subtitle_stream')
+            STATE['subtitle_streams'] = ['eng']
+            call('play', kind='movie', id=10)
+            tracker.onAVStarted()
+            self.assertNotIn('subs_shown', STATE)
+            self.assertNotEqual(tracker.subs_due, 0)
+            tracker.onPlayBackStopped()
+            # český zvuk: titulky se nezapínají
+            STATE['subtitle_streams'] = ['eng', 'cze']
+            STATE['answers']['select'] = 0                            # český stream (Pocatek 1080p CZ)
+            call('play', kind='movie', id=10)
+            tracker.onAVStarted()
+            self.assertNotIn('subs_shown', STATE)
+            tracker.onPlayBackStopped()
+            # vypnout vždy
+            STATE['settings']['subs_mode'] = '2'
+            call('play', kind='movie', id=10)
+            tracker.onAVStarted()
+            self.assertIs(STATE['subs_shown'], False)
+            tracker.onPlayBackStopped()
+        finally:
+            STATE['settings'].pop('subs_mode', None)
+            STATE.pop('subs_shown', None)
+            STATE.pop('subtitle_stream', None)
+            STATE.pop('subtitle_streams', None)
+            STATE['answers']['select'] = 0
+
     def test_play_auto_select_skips_missing_file(self):
         STATE['settings']['auto_select'] = 'true'
         self.provider.broken = {'m1'}
@@ -626,6 +777,60 @@ class ScreenTests(unittest.TestCase):
         call('my_list', kind='tv')
         self.assertTrue(STATE['items'][0][2])
         call('watch_toggle', kind='tv', id=20)
+
+    def test_guard_screen(self):
+        database = ctx.db()
+        for kind, tmdb_id in (('movie', 10), ('tv', 20)):
+            database.watch_remove(kind, tmdb_id)
+        database.news_remove()
+        try:
+            # nic se nehlídá: položka s návodem, jak seriál přidat
+            call('guard')
+            self.assertIn('jak přidat seriál', labels()[0])
+            call('guard_help')
+            self.assertIn('Hlídat nové díly', STATE['dialogs'][-1][1])
+            # hlídaný seriál je vidět i s tím, kdy vyjde další díl
+            call('watch_toggle', kind='tv', id=20)
+            self.assertIn('Hlídám nové díly', STATE['notifications'][-1])
+            call('guard')
+            self.assertIn('Testovací seriál', labels()[0])
+            self.assertIn('další díl S01E04 · 01.01.2999', labels()[0])
+            self.assertTrue(STATE['items'][0][2])                      # seriál je složka se sezónami
+            self.assertIn('Zkontrolovat nyní', labels()[-1])
+            # vyšel třetí díl, ale stream ještě není -> čeká na stream
+            self.tmdb.last = (1, 3)
+            call('check_now')
+            call('guard')
+            self.assertIn('čeká na stream: S01E03', labels()[0])
+            call('root')
+            self.assertFalse(any('nových' in label for label in labels()))
+            # stream se objevil -> hlídač to oznámí a díl je nahoře připravený k přehrání
+            self.provider.add('e3', 'Test.Show.S01E03.1080p.CZ.mkv')
+            call('check_now')
+            self.assertIn('S01E03', STATE['notifications'][-1])
+            call('root')
+            self.assertTrue(any(label.startswith('Hlídané') and '1 nových' in label for label in labels()))
+            call('guard')
+            self.assertIn('● nové', labels()[0])
+            self.assertIn('Testovací seriál – S01E03', labels()[0])
+            self.assertIn('action=play', STATE['items'][0][0])
+            self.assertIn('episode=3', STATE['items'][0][0])
+            self.assertNotIn('čeká na stream', labels()[1])
+            call('root')                                               # po zobrazení už nejsou „nové“
+            self.assertFalse(any('nových' in label for label in labels()))
+            # hlídaný film: dokud stream není, čeká; zhlédnutý díl z nabídky zmizí
+            call('watch_toggle', kind='movie', id=10)
+            database.progress_mark('episode', 20, 1, 3, True)
+            call('guard')
+            self.assertNotIn('● nové', labels()[0])
+            self.assertTrue(any('Počátek' in label and 'čeká na stream' in label for label in labels()))
+        finally:
+            self.tmdb.last = (1, 2)
+            self.provider.files = [f for f in self.provider.files if f.ident != 'e3']
+            for kind, tmdb_id in (('movie', 10), ('tv', 20)):
+                database.watch_remove(kind, tmdb_id)
+            database.news_remove()
+            database.progress_mark('episode', 20, 1, 3, False)
 
     def test_search_and_manual_search(self):
         STATE['answers']['input'] = ['pocatek']
@@ -958,10 +1163,74 @@ class ScreenTests(unittest.TestCase):
             self.assertEqual(data['next_episode']['episode'], 2)
             self.assertEqual(data['next_episode']['showtitle'], 'Testovací seriál')
             self.assertEqual(data['play_info'], {'tmdb_id': 20, 'season': 1, 'episode': 2})
-            # před koncem se další díl z playlistu odebere - o pokračování rozhoduje okénko Up Next
-            STATE['player'].update(playing=True, time=2390.0, total=2400.0)
+            # Up Next dostane i adresu dalšího dílu (zařadí si ji sám) a čas, kdy má okénko vyskočit
+            next_url = STATE['playlist'][1][0]
+            self.assertEqual(data['play_url'], next_url)
+            self.assertEqual(data['notification_time'], upnext.NOTIFY_TIME)
+            # uprostřed dílu je další díl v playlistu (funguje tlačítko „další“)
+            STATE['player'].update(playing=True, time=1000.0, total=2400.0)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 2)
+            # těsně před okénkem se playlist uvolní - jinak by Up Next nenabídl nic
+            STATE['player'].update(time=2400.0 - upnext.NOTIFY_TIME - 5)
             tracker.poll()
             self.assertEqual(len(STATE['playlist']), 1)
+            # Up Next ukázal okénko a další díl si zařadil sám: doplněk už do playlistu nesahá
+            STATE['window'][upnext.DIALOG_PROPERTY] = 'true'
+            STATE['playlist'].append((next_url, None))
+            STATE['player'].update(time=2380.0)
+            tracker.poll()
+            STATE['window'].pop(upnext.DIALOG_PROPERTY)
+            STATE['playlist'].pop()                       # uživatel dal „Zavřít“ - Up Next díl odebral
+            STATE['player'].update(time=2395.0)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 1)   # zrušení platí, nic se nevrací
+            tracker.onPlayBackEnded()
+            self.assertIsNone(tracker.pop_finished_episode())
+            # Up Next se neozval (vypnutý, chyba): před koncem se další díl vrátí a spustí ho playlist
+            call('play', _handle='-1', kind='episode', id=20, season=1, episode=1)
+            tracker.onAVStarted()
+            STATE['player'].update(playing=True, time=2400.0 - upnext.NOTIFY_TIME - 5, total=2400.0)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 1)
+            STATE['player'].update(time=2380.0)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 1)   # ještě čekáme na okénko
+            STATE['player'].update(time=2394.0)
+            tracker.poll()
+            self.assertEqual([path for path, _item in STATE['playlist']][1], next_url)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 2)   # vrací se jen jednou
+            tracker.onPlayBackEnded()
+            self.assertIsNone(tracker.pop_finished_episode())
+            # přetočení zpět po uvolnění playlistu: další díl se vrátí (tlačítko „další“ zase funguje)
+            call('play', _handle='-1', kind='episode', id=20, season=1, episode=1)
+            tracker.onAVStarted()
+            STATE['player'].update(playing=True, time=2400.0 - upnext.NOTIFY_TIME - 5, total=2400.0)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 1)
+            STATE['player'].update(time=1200.0)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 2)
+            # skok až za čas okénka: Up Next už mohl díl zařadit sám, playlist se nechá být
+            STATE['player'].update(time=2400.0 - upnext.NOTIFY_TIME + 5)
+            tracker.poll()
+            self.assertEqual(len(STATE['playlist']), 2)
+            tracker.onPlayBackStopped()
+            # díl puštěný samostatně (bez playlistu): když se okénko neukáže, spustí další díl služba
+            del STATE['playlist'][:]
+            call('play', kind='episode', id=20, season=1, episode=1)
+            tracker.onAVStarted()
+            STATE['player'].update(playing=True, time=2390.0, total=2400.0)
+            tracker.poll()
+            tracker.onPlayBackEnded()
+            self.assertEqual(tracker.pop_finished_episode()['episode'], 1)
+            # ... a když se ukázalo, rozhodl Up Next a služba nic nespouští
+            call('play', kind='episode', id=20, season=1, episode=1)
+            tracker.onAVStarted()
+            STATE['window'][upnext.DIALOG_PROPERTY] = 'true'
+            tracker.poll()
+            STATE['window'].pop(upnext.DIALOG_PROPERTY)
             tracker.onPlayBackEnded()
             self.assertIsNone(tracker.pop_finished_episode())
             # Up Next žádá o přehrání -> služba spustí další díl sama
@@ -1469,7 +1738,8 @@ class SourceTests(unittest.TestCase):
             self.assertIn('Zbývá dní: 6', STATE['dialogs'][-1][1])         # 5 dní a kousek = 6. den
             self.assertIn('Premium: aktivní', STATE['dialogs'][-1][1])
             call('root')                                                   # dny premium v hlavním menu
-            self.assertTrue(any('Streamuj.tv' in label and 'premium 6 dní' in label for label in labels()))
+            self.assertTrue(any('Streamuj.tv' in label and 'premium do %s (6 dní)' % until.strftime('%d.%m.%Y')
+                                in label for label in labels()))
             # služba: premium končí do 7 dní -> jednou denně upozornění
             STATE['notifications'] = []
             with self._http({sosac.WEB_API: premium}):
@@ -1538,6 +1808,78 @@ class SourceTests(unittest.TestCase):
         self.assertIsNone(sosac.parse_expiration('0000-00-00 00:00:00'))
         self.assertEqual(sosac.parse_expiration('15.03.2030').year, 2030)
         self.assertEqual(sosac.parse_expiration(1900000000000).year, 2030)    # milisekundy
+
+    def test_streamuj_login_through_website(self):
+        # rozhraní přehrávače účet odmítne (result 0), přihlašovací formulář webu ho ale přijme
+        # a stránka účtu ukáže, do kdy platí premium
+        from unittest import mock
+        from resources.lib.providers import sosac
+        account_page = ('<div>Vítejte, <b>tester</b></div><a href="/logout">odhlásit</a>'
+                        '<div class="x">Premium účet máte aktivní do: <b>21.12.2099 03:56:38</b></div>')
+        sent = []
+
+        def web(path, data=None, cookie=''):
+            sent.append((path, data, cookie))
+            if data is not None:
+                if data['password'] != 'heslo':
+                    return '<div id="container"><div class="errorbox">\nŠpatné uživatelské jméno nebo heslo.\n</div>', ''
+                return '<html>přesměrování</html>', 'CLIPSHARE=abc'
+            return (account_page, cookie) if cookie == 'CLIPSHARE=abc' else ('<form id="loginForm">', '')
+        refused = {'result': 0, 'UID': 0, 'cookie': 0, 'expiration': 0}
+        store = _MemoryStore()
+        source = sosac.Sosac(store)
+        with self._http({sosac.WEB_API: refused}), mock.patch.object(sosac, 'web_fetch', web):
+            info = source.login('tester', 'heslo')
+            self.assertTrue(info.known)
+            self.assertTrue(info.vip)
+            self.assertEqual(info.vip_until, '21.12.2099')
+            self.assertEqual(sent[0][0], sosac.WEB_LOGIN)
+            self.assertEqual(sent[0][1]['username'], 'tester')
+            self.assertEqual(sent[1], ('/', None, 'CLIPSHARE=abc'))      # datum je až na stránce účtu
+            self.assertNotIn('heslo', store.values())                     # heslo se neukládá
+            self.assertEqual(store['password_hash'], sosac.password_hash('heslo'))
+            self.assertEqual(store['web_cookie'], 'CLIPSHARE=abc')
+            # pozdější kontrola premium: bez hesla, přes uloženou cookie
+            del sent[:]
+            status = source.account()
+            self.assertEqual(status.vip_until, '21.12.2099')
+            self.assertTrue(all(data is None for _path, data, _cookie in sent))
+        # web neodpovídá: platí naposledy zjištěné datum
+        with self._http({sosac.WEB_API: refused}):
+            self.assertEqual(source.account().vip_until, '21.12.2099')
+        # špatné heslo odmítnou obě cesty
+        source.logout()
+        self.assertNotIn('web_cookie', store)
+        self.assertNotIn('premium_until', store)
+        with self._http({sosac.WEB_API: refused}), mock.patch.object(sosac, 'web_fetch', web):
+            with self.assertRaises(ProviderError) as raised:
+                source.login('tester', 'spatne')
+        self.assertEqual(raised.exception.code, ProviderError.BAD_CREDENTIALS)
+        self.assertFalse(source.is_logged_in())
+        # rozhraní účet potvrdí i s datem: web (a heslo v čitelné podobě) se vůbec nepoužije
+        del sent[:]
+        with self._http({sosac.WEB_API: {'result': 2, 'UID': 7, 'expiration': '2099-01-31 12:00:00'}}), \
+                mock.patch.object(sosac, 'web_fetch', web):
+            self.assertEqual(source.login('tester', 'heslo').vip_until, '31.01.2099')
+        self.assertEqual(sent, [])
+        # síť nejde vůbec: chyba sítě, ne „špatné heslo“
+        source.logout()
+        with self._http({}):
+            with self.assertRaises(ProviderError) as raised:
+                source.login('tester', 'heslo')
+        self.assertEqual(raised.exception.code, ProviderError.NETWORK)
+        # čtení stránky účtu
+        self.assertEqual(sosac.parse_premium_page('Premium účet máte aktivní do: 21.12.2026 03:56:38').hour, 3)
+        self.assertEqual(sosac.parse_premium_page('aktivní do <b>1.2.2027</b>').month, 2)
+        # přesně tak, jak to web Streamuj.tv na úvodní stránce vrací
+        real = '<h3>\n  Premium účet máte aktivní do: <strong>21.12.2026 03:56:38</strong>\n</h3>'
+        self.assertEqual(sosac.parse_premium_page(real).strftime('%d.%m.%Y %H:%M:%S'), '21.12.2026 03:56:38')
+        self.assertIs(sosac.page_logged_in(real), True)
+        self.assertIsNone(sosac.parse_premium_page('Kupte si premium'))
+        self.assertIsNone(sosac.parse_premium_page('aktivní do: 41.13.2026'))
+        self.assertIs(sosac.page_logged_in('<div class="errorbox">Špatné uživatelské jméno nebo heslo.</div>'), False)
+        self.assertIs(sosac.page_logged_in('<a href="/login">Přihlásit se</a>'), None)
+        self.assertIs(sosac.page_logged_in(account_page), True)
 
     def test_premium_without_end_date_is_shown(self):
         from resources.lib.providers import sosac

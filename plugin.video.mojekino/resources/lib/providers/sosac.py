@@ -17,6 +17,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from http.cookiejar import CookieJar
 
 from resources.lib import http, parser
 from resources.lib.providers import AccountInfo, ProviderError, StreamFile, StreamProvider
@@ -26,6 +27,10 @@ SEARCH = CATALOG + '/jsonsearchapi.php'
 SHOW_LETTER = CATALOG + '/vystupy5981/tvpismena/%s.json'
 STREAMUJ = 'http://www.streamuj.tv/video/'
 WEB_API = 'https://www.streamuj.tv/json_api.php'
+WEB = 'https://www.streamuj.tv'
+WEB_LOGIN = '/login'
+WEB_ACCOUNT_PAGES = ('/', '/my_profile')     # kde web po přihlášení ukazuje „Premium účet máte aktivní do“
+WEB_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux armv7l) Kodi/21'
 LETTER_TTL = 12 * 3600
 
@@ -60,6 +65,53 @@ def parse_expiration(value):
         except ValueError:
             continue
     return None
+
+
+_RE_ACTIVE_UNTIL = re.compile(r'aktivn\w*\s+do\b(.{0,160})', re.I | re.S)
+_RE_DATE = re.compile(r'(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?')
+_RE_LOGGED = re.compile(r'logout|odhl[aá]sit|V[ií]tejte\s*,', re.I)
+_RE_BAD_LOGIN = re.compile(r'errorbox[^>]*>[^<]*(jm[eé]no|heslo)', re.I)
+
+
+def parse_premium_page(page):
+    """Konec premium ze stránky účtu („Premium účet máte aktivní do: 21.12.2026 03:56:38“), jinak None."""
+    found = _RE_ACTIVE_UNTIL.search(page or '')
+    if not found:
+        return None
+    date = _RE_DATE.search(re.sub(r'<[^>]+>', ' ', found.group(1)))
+    if not date:
+        return None
+    day, month, year, hour, minute, second = (int(part or 0) for part in date.groups())
+    try:
+        return datetime.datetime(year, month, day, hour, minute, second)
+    except ValueError:
+        return None
+
+
+def page_logged_in(page):
+    """Je stránka webu zobrazená přihlášenému uživateli? True / False (odmítnuté údaje) / None (nejde poznat)."""
+    if _RE_BAD_LOGIN.search(page or ''):
+        return False
+    if _RE_LOGGED.search(page or '') or parse_premium_page(page):
+        return True
+    return None
+
+
+def web_fetch(path, data=None, cookie=''):
+    """Stránka webu Streamuj.tv jako text + cookies sezení. `data` (dict) = odeslání formuláře."""
+    jar = CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    headers = {'User-Agent': WEB_USER_AGENT, 'Referer': WEB + '/'}
+    if cookie:
+        headers['Cookie'] = cookie
+    body = urllib.parse.urlencode(data).encode('utf-8') if data is not None else None
+    try:
+        with opener.open(urllib.request.Request(WEB + path, data=body, headers=headers), timeout=15) as response:
+            page = response.read(400000).decode('utf-8', 'replace')
+    except Exception as e:       # síť, timeout, HTTP chyba
+        raise ProviderError(ProviderError.NETWORK, str(e))
+    fresh = '; '.join('%s=%s' % (c.name, c.value) for c in jar)
+    return page, fresh or cookie
 
 
 def _imdb_number(value):
@@ -97,8 +149,9 @@ class Sosac(StreamProvider):
     id = 'sosac'
     name = 'Sosáč'
 
-    def __init__(self, store):
+    def __init__(self, store, log=None):
         self._store = store
+        self._log = log or (lambda message: None)     # ladicí zpráva do logu Kodi (bez hesel a cookies)
 
     # ---- účet Streamuj.tv ----
     def is_logged_in(self):
@@ -118,16 +171,36 @@ class Sosac(StreamProvider):
     def login(self, username, password, force=False):
         """Ověří účet u Streamuj.tv a uloží ho. Heslo se neukládá.
 
-        Ověření dělá stejně jako přihlášení na webu Streamuj.tv: check-user s md5(heslo)
-        a passwordinmd5=1. Odpověď: result 0 = špatné jméno nebo heslo, 1 = účet bez premium,
-        2 = účet s premium; UID = číslo účtu. Pro přehrávání se uloží md5(md5(heslo)),
-        pro pozdější kontrolu premium stačí UID a jméno (bez hesla).
-        Špatné údaje vyvolají BAD_CREDENTIALS; s `force` se účet uloží i tak (bez stavu premium).
+        Dvě cesty, stejné jako na webu Streamuj.tv:
+          1. rozhraní přehrávače: check-user s md5(heslo) a passwordinmd5=1. Odpověď: result 0 =
+             odmítnuto, 1 = účet bez premium, 2 = účet s premium; UID = číslo účtu.
+          2. přihlašovací formulář webu - použije se, když rozhraní účet nepotvrdí nebo nepošle datum
+             konce premium (některé účty odmítá, i když na webu fungují). Stránka účtu po přihlášení
+             ukazuje „Premium účet máte aktivní do: …“. Heslo jde jen na streamuj.tv přes HTTPS.
+        Pro přehrávání se uloží md5(md5(heslo)); pro pozdější kontrolu premium UID, cookie sezení
+        a naposledy zjištěné datum konce. Odmítnuté údaje vyvolají BAD_CREDENTIALS; s `force` se
+        účet uloží i tak (bez stavu premium).
         """
-        data = self._api({'action': 'check-user', 'login': username, 'passwordinmd5': 1,
-                          'password': hashlib.md5(password.encode('utf-8')).hexdigest()})
+        data, failure = {}, None
+        try:
+            data = self._api({'action': 'check-user', 'login': username, 'passwordinmd5': 1,
+                              'password': hashlib.md5(password.encode('utf-8')).hexdigest()})
+        except ProviderError as e:
+            failure = e
         result = _int(data.get('result'))
-        if result not in (1, 2) and not force:
+        expiration = parse_expiration(data.get('expiration'))
+        self._log('Streamuj.tv rozhraní: result=%s, expiration=%r -> datum %s' % (
+            result, data.get('expiration'), expiration))
+        web_ok, cookie = None, ''
+        if result not in (1, 2) or expiration is None:
+            web_ok, web_until, cookie = self._web_login(username, password)
+            expiration = web_until or expiration
+        verified = result in (1, 2) or web_ok is True
+        self._log('Streamuj.tv výsledek přihlášení: ověřeno=%s, web=%s, konec premium=%s' % (
+            verified, web_ok, expiration))
+        if not verified and not force:
+            if failure is not None and web_ok is None:
+                raise failure                            # nešlo ověřit ani jednou cestou (síť)
             raise ProviderError(ProviderError.BAD_CREDENTIALS)
         self._store.set('username', username)
         self._store.set('password_hash', password_hash(password))
@@ -137,12 +210,56 @@ class Sosac(StreamProvider):
             self._store.set('uid', str(uid))
         else:
             self._store.delete('uid')
-        if result not in (1, 2):
+        if web_ok is True and cookie:
+            self._store.set('web_cookie', cookie)
+        else:
+            self._store.delete('web_cookie')
+        self._remember_until(expiration if verified else None)
+        if not verified or (expiration is None and result not in (1, 2)):
             return AccountInfo(logged_in=True, username=username, known=False)
-        return self._info(username, result == 2, parse_expiration(data.get('expiration')))
+        return self._info(username, result == 2, expiration)
+
+    def _web_login(self, username, password):
+        """Přihlášení formulářem webu. Vrací (přihlášeno True/False/None, konec premium, cookie)."""
+        try:
+            page, cookie = web_fetch(WEB_LOGIN, {'username': username, 'password': password,
+                                                 'login_remember': 'on', 'action_login': 'Přihlásit se'})
+        except ProviderError:
+            return None, None, ''
+        logged = page_logged_in(page)
+        self._log('Streamuj.tv web: po odeslání formuláře přihlášen=%s, cookie=%s, premium text=%s' % (
+            logged, bool(cookie), 'aktivn' in page))
+        if logged is False:
+            return False, None, ''
+        until = parse_premium_page(page)
+        for path in WEB_ACCOUNT_PAGES:
+            if until is not None or not cookie:
+                break
+            try:
+                page, cookie = web_fetch(path, cookie=cookie)
+            except ProviderError:
+                continue
+            if logged is None:
+                logged = page_logged_in(page) or None    # nepřihlášená stránka tu ještě nic nedokazuje
+            until = parse_premium_page(page)
+            self._log('Streamuj.tv web: stránka %s přihlášen=%s, datum=%s' % (path, logged, until))
+        return logged, until, cookie
+
+    def _remember_until(self, expiration):
+        if expiration:
+            self._store.set('premium_until', str(int(time.mktime(expiration.timetuple()))))
+        else:
+            self._store.delete('premium_until')
+
+    def _stored_until(self):
+        try:
+            stamp = int(self._store.get('premium_until') or 0)
+            return datetime.datetime.fromtimestamp(stamp) if stamp > 0 else None
+        except (TypeError, ValueError, OverflowError, OSError):
+            return None
 
     def logout(self):
-        for key in ('username', 'password_hash', 'uid', 'check_secret'):
+        for key in ('username', 'password_hash', 'uid', 'check_secret', 'web_cookie', 'premium_until'):
             self._store.delete(key)
 
     @staticmethod
@@ -158,15 +275,41 @@ class Sosac(StreamProvider):
         return AccountInfo(logged_in=True, username=username, vip=False)
 
     def account(self):
-        """Stav premium podle UID z přihlášení (check-premium-status, heslo není potřeba)."""
+        """Stav premium bez hesla: podle UID (check-premium-status), ze stránky účtu přes uloženou
+        cookie sezení, a když neodpoví ani jedno, podle data konce zjištěného při přihlášení."""
         if not self.is_logged_in():
             return AccountInfo(logged_in=False)
         username = self._store.get('username', '') or ''
-        uid = self._store.get('uid')
-        if not uid:
+        uid, cookie = self._store.get('uid'), self._store.get('web_cookie')
+        premium, expiration, known, failure = False, None, False, None
+        if uid:
+            try:
+                data = self._api({'action': 'check-premium-status', 'UID': uid, 'login': username})
+                premium, known = _int(data.get('result')) == 1, True
+                expiration = parse_expiration(data.get('expiration'))
+            except ProviderError as e:
+                failure = e
+        if known and not premium and expiration is None:
+            # rozhraní zná účet a hlásí, že premium nemá - starší uložené datum už neplatí
+            self._remember_until(None)
+            return self._info(username, False, None)
+        if cookie and expiration is None:
+            for path in WEB_ACCOUNT_PAGES:
+                try:
+                    expiration = parse_premium_page(web_fetch(path, cookie=cookie)[0])
+                except ProviderError:
+                    break
+                if expiration is not None:
+                    break
+        if expiration is not None:
+            self._remember_until(expiration)
+        else:
+            expiration = self._stored_until()
+        if expiration is None and not known:
+            if failure is not None:
+                raise failure
             return AccountInfo(logged_in=True, username=username, known=False)
-        data = self._api({'action': 'check-premium-status', 'UID': uid, 'login': username})
-        return self._info(username, _int(data.get('result')) == 1, parse_expiration(data.get('expiration')))
+        return self._info(username, premium, expiration)
 
     # ---- síť ----
     @staticmethod

@@ -64,7 +64,7 @@ def provider():
 
 
 def sosac():
-    return Sosac(MetaStore(db(), 'sosac'))
+    return Sosac(MetaStore(db(), 'sosac'), log=kodi.debug)
 
 
 def extra_providers():
@@ -78,6 +78,20 @@ def extra_providers():
         result.append(HellSpy())
     if kodi.setting_bool('src_prehrajto', True):
         result.append(Prehrajto())
+    return result
+
+
+def watch_providers():
+    """Zdroje, ve kterých hlídač na pozadí hledá nové díly a filmy: Webshare a Sosáč.
+
+    Převáděné zdroje (HellSpy, Přehraj.to) se vynechávají - omezují počet dotazů a hlídač
+    se ptá často.
+    """
+    result = [provider()]
+    if kodi.setting_bool('src_sosac', True):
+        source = sosac()
+        if source.is_logged_in():
+            result.append(source)
     return result
 
 

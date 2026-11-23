@@ -90,6 +90,9 @@ class Dialog(object):
 
     def select(self, heading, items, useDetails=False, **kwargs):
         STATE['dialogs'].append(('select', [getattr(i, 'label', i) for i in items]))
+        STATE['select_items'] = list(items)
+        if STATE['answers'].get('selects'):                   # postupné odpovědi (několik výběrů za sebou)
+            return STATE['answers']['selects'].pop(0)
         return STATE['answers']['select']
 
     def contextmenu(self, items):
@@ -181,6 +184,15 @@ class Player(object):
     def getTotalTime(self):
         return STATE['player']['total']
 
+    def showSubtitles(self, visible):
+        STATE['subs_shown'] = visible
+
+    def getAvailableSubtitleStreams(self):
+        return list(STATE.get('subtitle_streams', []))
+
+    def setSubtitleStream(self, index):
+        STATE['subtitle_stream'] = index
+
     def play(self, item='', listitem=None):
         if isinstance(item, PlayList):
             STATE['playlist_started'] = True
@@ -210,6 +222,9 @@ class PlayList(object):
 
     def size(self):
         return len(STATE['playlist'])
+
+    def getposition(self):
+        return STATE.get('playlist_position', 0)
 
 
 def _cond_visibility(condition):
